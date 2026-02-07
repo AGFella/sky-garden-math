@@ -1,5 +1,6 @@
 const TOTAL_QUESTIONS = 15;
 const STREAK_BONUS_AT = 3;
+const UNLOCK_TARGET = 10;
 
 const i18n = {
   ru: {
@@ -80,6 +81,14 @@ const state = {
   consecutiveWrong: 0,
   wrongAttempts: 0,
   currentQuestion: null,
+  unlocked: {
+    medium: false,
+    hard: false,
+  },
+  correctCounts: {
+    easy: 0,
+    medium: 0,
+  },
 };
 
 const problemText = document.getElementById("problemText");
@@ -97,6 +106,7 @@ const endOverlay = document.getElementById("endOverlay");
 const stars = document.getElementById("stars");
 const endTitle = document.getElementById("endTitle");
 const endSummary = document.getElementById("endSummary");
+const difficultyButtons = Array.from(document.querySelectorAll("[data-difficulty]"));
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
@@ -156,6 +166,18 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function makeAddition(range) {
+  const a = randomInt(range[0], range[1]);
+  const b = randomInt(range[0], range[1]);
+  return { a, b, op: "+", answer: a + b };
+}
+
+function makeSubtraction(range) {
+  const a = randomInt(range[0], range[1]);
+  const b = randomInt(range[0], Math.min(a, range[1]));
+  return { a, b, op: "−", answer: a - b };
+}
+
 function makeMultiplication(rangeA, rangeB) {
   const a = randomInt(rangeA[0], rangeA[1]);
   const b = randomInt(rangeB[0], rangeB[1]);
@@ -172,18 +194,24 @@ function makeDivision(rangeDivisor, rangeQuotient) {
 function generateQuestion(difficulty) {
   const pick = Math.random();
   if (difficulty === "easy") {
-    return pick < 0.5
-      ? makeMultiplication([2, 9], [2, 9])
-      : makeDivision([2, 9], [2, 9]);
+    if (pick < 0.5) return makeAddition([0, 19]);
+    if (pick < 0.75) return makeSubtraction([0, 19]);
+    return pick < 0.875
+      ? makeMultiplication([1, 4], [1, 4])
+      : makeDivision([1, 4], [1, 4]);
   }
   if (difficulty === "medium") {
-    return pick < 0.5
-      ? makeMultiplication([10, 30], [2, 9])
-      : makeDivision([2, 9], [5, 15]);
+    if (pick < 0.5) return makeAddition([0, 30]);
+    if (pick < 0.75) return makeSubtraction([0, 30]);
+    return pick < 0.875
+      ? makeMultiplication([1, 9], [1, 9])
+      : makeDivision([2, 9], [1, 9]);
   }
-  return pick < 0.5
-    ? makeMultiplication([10, 25], [10, 25])
-    : makeDivision([2, 12], [6, 20]);
+  if (pick < 0.4) return makeAddition([0, 100]);
+  if (pick < 0.8) return makeSubtraction([0, 100]);
+  return pick < 0.9
+    ? makeMultiplication([2, 100], [2, 10])
+    : makeDivision([2, 10], [2, 100]);
 }
 
 function updateProblemText() {
@@ -291,6 +319,21 @@ answerForm.addEventListener("submit", (event) => {
     setKittenMood(null);
     playKitten("happy");
 
+    if (state.difficulty === "easy") {
+      state.correctCounts.easy += 1;
+      if (state.correctCounts.easy >= UNLOCK_TARGET) {
+        state.unlocked.medium = true;
+      }
+    }
+    if (state.difficulty === "medium") {
+      state.correctCounts.medium += 1;
+      if (state.correctCounts.medium >= UNLOCK_TARGET) {
+        state.unlocked.hard = true;
+      }
+    }
+
+    updateDifficultyUI();
+
     if (state.streak > 0 && state.streak % STREAK_BONUS_AT === 0) {
       state.score += 1;
     }
@@ -317,9 +360,29 @@ answerForm.addEventListener("submit", (event) => {
   }
 });
 
-Array.from(document.querySelectorAll("[data-difficulty]")).forEach((btn) => {
+function updateDifficultyUI() {
+  difficultyButtons.forEach((btn) => {
+    const level = btn.getAttribute("data-difficulty");
+    const isUnlocked =
+      level === "easy" ||
+      (level === "medium" && state.unlocked.medium) ||
+      (level === "hard" && state.unlocked.hard);
+    btn.classList.toggle("locked", !isUnlocked);
+    btn.disabled = !isUnlocked;
+    btn.classList.toggle("active", level === state.difficulty);
+  });
+}
+
+difficultyButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
-    state.difficulty = btn.getAttribute("data-difficulty");
+    const level = btn.getAttribute("data-difficulty");
+    const isUnlocked =
+      level === "easy" ||
+      (level === "medium" && state.unlocked.medium) ||
+      (level === "hard" && state.unlocked.hard);
+    if (!isUnlocked) return;
+    state.difficulty = level;
+    updateDifficultyUI();
     startGame();
   });
 });
@@ -339,3 +402,4 @@ endOverlay.hidden = true;
 setLanguage(state.lang);
 startGame();
 startIdleLoop();
+updateDifficultyUI();
