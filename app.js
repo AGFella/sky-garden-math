@@ -383,7 +383,13 @@ difficultyButtons.forEach((btn) => {
     if (!isUnlocked) return;
     state.difficulty = level;
     updateDifficultyUI();
-    startGame();
+    state.wrongAttempts = 0;
+    state.consecutiveWrong = 0;
+    endOverlay.hidden = true;
+    setKittenCrying(false);
+    setKittenMood(null);
+    updateStats();
+    nextQuestion();
   });
 });
 
