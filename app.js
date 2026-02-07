@@ -89,6 +89,7 @@ const state = {
     easy: 0,
     medium: 0,
   },
+  islandIndex: 0,
 };
 
 const problemText = document.getElementById("problemText");
@@ -107,6 +108,8 @@ const stars = document.getElementById("stars");
 const endTitle = document.getElementById("endTitle");
 const endSummary = document.getElementById("endSummary");
 const difficultyButtons = Array.from(document.querySelectorAll("[data-difficulty]"));
+const flower = document.getElementById("flower");
+const islands = Array.from(document.querySelectorAll(".island"));
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
@@ -227,6 +230,27 @@ function updateStats() {
   scoreText.textContent = state.score;
 }
 
+function updateFlowerProgress(count) {
+  if (!flower) return;
+  const pieces = [
+    ".stem-1",
+    ".stem-2",
+    ".center",
+    ".p1",
+    ".p2",
+    ".p3",
+    ".p4",
+    ".p5",
+    ".p6",
+    ".leaf",
+  ];
+  pieces.forEach((selector, index) => {
+    const el = flower.querySelector(selector);
+    if (!el) return;
+    el.classList.toggle("on", index < count);
+  });
+}
+
 function setFeedback(text, isCorrect) {
   feedback.textContent = text;
   feedback.style.color = isCorrect ? "#0f7d4f" : "#c93f3f";
@@ -271,6 +295,7 @@ function startGame() {
   endOverlay.hidden = true;
   setKittenCrying(false);
   setKittenMood(null);
+  updateFlowerProgress(0);
   nextQuestion();
 }
 
@@ -289,6 +314,39 @@ function celebrateSeed() {
   setTimeout(() => seed.classList.remove("grow"), 300);
 }
 
+function moveFlowerToIsland() {
+  if (!flower || islands.length === 0) return;
+  const activePieces = flower.querySelectorAll(".on");
+  if (activePieces.length === 0) return;
+
+  const island = islands[state.islandIndex % islands.length];
+  state.islandIndex += 1;
+
+  const startRect = flower.getBoundingClientRect();
+  const targetRect = island.getBoundingClientRect();
+  const targetX = targetRect.left + targetRect.width / 2 - startRect.width / 2;
+  const targetY = targetRect.top + targetRect.height / 2 - startRect.height / 2 - 10;
+
+  const clone = flower.cloneNode(true);
+  clone.classList.add("flower-placed");
+  clone.style.left = `${startRect.left}px`;
+  clone.style.top = `${startRect.top}px`;
+  clone.style.width = `${startRect.width}px`;
+  clone.style.height = `${startRect.height}px`;
+  clone.style.transform = "scale(1)";
+  clone.style.opacity = "1";
+  clone.style.position = "fixed";
+
+  document.body.appendChild(clone);
+
+  requestAnimationFrame(() => {
+    clone.style.left = `${targetX}px`;
+    clone.style.top = `${targetY}px`;
+    clone.style.transform = "scale(0.6)";
+    clone.style.opacity = "1";
+  });
+}
+
 function endGame() {
   const accuracy = state.score / TOTAL_QUESTIONS;
   const starCount = accuracy >= 0.9 ? 3 : accuracy >= 0.7 ? 2 : 1;
@@ -298,6 +356,7 @@ function endGame() {
   endTitle.textContent = strings.end_title;
   endSummary.textContent = strings.end_summary(state.score, TOTAL_QUESTIONS);
   endOverlay.hidden = false;
+  moveFlowerToIsland();
 }
 
 answerForm.addEventListener("submit", (event) => {
@@ -339,6 +398,7 @@ answerForm.addEventListener("submit", (event) => {
     }
 
     updateStats();
+    updateFlowerProgress(state.currentIndex);
     setTimeout(nextQuestion, 500);
   } else {
     state.streak = 0;
@@ -389,6 +449,7 @@ difficultyButtons.forEach((btn) => {
     setKittenCrying(false);
     setKittenMood(null);
     updateStats();
+    updateFlowerProgress(state.currentIndex);
     nextQuestion();
   });
 });
@@ -409,3 +470,4 @@ setLanguage(state.lang);
 startGame();
 startIdleLoop();
 updateDifficultyUI();
+updateFlowerProgress(state.currentIndex);

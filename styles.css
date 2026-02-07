@@ -173,6 +173,18 @@ body {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.btn.active {
+  border: 2px solid #2fb36b;
+  box-shadow: 0 0 0 3px rgba(47, 179, 107, 0.2);
+}
+
+.btn.locked {
+  background: #e6e6e6;
+  color: #7a7a7a;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
@@ -374,6 +386,91 @@ body {
   align-items: center;
 }
 
+.flower {
+  grid-column: 3;
+  position: relative;
+  width: 120px;
+  height: 140px;
+  margin: 0 auto;
+}
+
+.stem {
+  position: absolute;
+  width: 10px;
+  background: #4aa35a;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.stem-1 {
+  height: 28px;
+  bottom: 22px;
+}
+
+.stem-2 {
+  height: 28px;
+  bottom: 50px;
+}
+
+.center {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: #f6c343;
+  border-radius: 50%;
+  left: 50%;
+  bottom: 78px;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.petal {
+  position: absolute;
+  width: 18px;
+  height: 30px;
+  border-radius: 10px 10px 12px 12px;
+  left: 50%;
+  bottom: 78px;
+  transform-origin: 50% 90%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.p1 { background: #ff7a7a; transform: translateX(-50%) rotate(0deg) translateY(-24px); }
+.p2 { background: #7ac7ff; transform: translateX(-50%) rotate(60deg) translateY(-24px); }
+.p3 { background: #ffb56b; transform: translateX(-50%) rotate(120deg) translateY(-24px); }
+.p4 { background: #b58bff; transform: translateX(-50%) rotate(180deg) translateY(-24px); }
+.p5 { background: #ff7ad1; transform: translateX(-50%) rotate(240deg) translateY(-24px); }
+.p6 { background: #7affb0; transform: translateX(-50%) rotate(300deg) translateY(-24px); }
+
+.leaf {
+  position: absolute;
+  width: 26px;
+  height: 14px;
+  background: #3d964f;
+  border-radius: 14px 0 14px 0;
+  left: calc(50% + 6px);
+  bottom: 36px;
+  transform: rotate(-18deg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.flower .on {
+  opacity: 1;
+}
+
+.flower-placed {
+  position: absolute;
+  transition: transform 0.9s ease, left 0.9s ease, top 0.9s ease, opacity 0.9s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .answer input {
   width: 140px;
   padding: 10px 12px;
@@ -521,6 +618,9 @@ body {
   .answer-row {
     grid-template-columns: 1fr;
     justify-items: center;
+  }
+  .flower {
+    margin-top: 12px;
   }
   .difficulty {
     flex-direction: column;
