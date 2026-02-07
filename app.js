@@ -72,7 +72,7 @@ const i18n = {
 };
 
 const state = {
-  lang: "ru",
+  lang: "en",
   difficulty: "easy",
   currentIndex: 0,
   score: 0,
@@ -265,5 +265,6 @@ Array.from(document.querySelectorAll("[data-lang]")).forEach((btn) => {
 document.getElementById("restartBtn").addEventListener("click", startGame);
 document.getElementById("playAgainBtn").addEventListener("click", startGame);
 
+endOverlay.hidden = true;
 setLanguage(state.lang);
 startGame();

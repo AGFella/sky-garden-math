@@ -316,6 +316,10 @@ body {
   z-index: 3;
 }
 
+.overlay[hidden] {
+  display: none;
+}
+
 .end-card {
   background: white;
   border-radius: 24px;
