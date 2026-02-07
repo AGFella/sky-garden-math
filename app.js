@@ -77,6 +77,7 @@ const state = {
   currentIndex: 0,
   score: 0,
   streak: 0,
+  consecutiveWrong: 0,
   wrongAttempts: 0,
   currentQuestion: null,
 };
@@ -91,10 +92,51 @@ const progressText = document.getElementById("progressText");
 const streakText = document.getElementById("streakText");
 const scoreText = document.getElementById("scoreText");
 const seed = document.getElementById("seed");
+const kitten = document.getElementById("kitten");
 const endOverlay = document.getElementById("endOverlay");
 const stars = document.getElementById("stars");
 const endTitle = document.getElementById("endTitle");
 const endSummary = document.getElementById("endSummary");
+
+const KITTY_ANIM_MS = 600;
+const IDLE_INTERVAL_MS = 5000;
+let idleTimer = null;
+
+function clearKittenAnimations() {
+  kitten.classList.remove("idle", "happy", "shake", "cry");
+}
+
+function playKitten(animation) {
+  clearKittenAnimations();
+  kitten.classList.add(animation);
+  setTimeout(() => kitten.classList.remove(animation), KITTY_ANIM_MS);
+}
+
+function setKittenCrying(isCrying) {
+  if (isCrying) {
+    kitten.classList.add("cry");
+    kitten.classList.add("sad");
+  } else {
+    kitten.classList.remove("cry");
+    kitten.classList.remove("sad");
+  }
+}
+
+function setKittenMood(mood) {
+  kitten.classList.remove("neutral", "sad");
+  if (mood) {
+    kitten.classList.add(mood);
+  }
+}
+
+function startIdleLoop() {
+  if (idleTimer) clearInterval(idleTimer);
+  idleTimer = setInterval(() => {
+    if (!kitten.classList.contains("happy") && !kitten.classList.contains("shake")) {
+      playKitten("idle");
+    }
+  }, IDLE_INTERVAL_MS);
+}
 
 function setLanguage(lang) {
   state.lang = lang;
@@ -182,10 +224,13 @@ function startGame() {
   state.currentIndex = 0;
   state.score = 0;
   state.streak = 0;
+  state.consecutiveWrong = 0;
   state.wrongAttempts = 0;
   state.currentQuestion = null;
   updateStats();
   endOverlay.hidden = true;
+  setKittenCrying(false);
+  setKittenMood(null);
   nextQuestion();
 }
 
@@ -225,10 +270,14 @@ answerForm.addEventListener("submit", (event) => {
   if (numeric === state.currentQuestion.answer) {
     state.score += 1;
     state.streak += 1;
+    state.consecutiveWrong = 0;
     state.currentIndex += 1;
     setFeedback(strings.correct, true);
     setHint("");
     celebrateSeed();
+    setKittenCrying(false);
+    setKittenMood(null);
+    playKitten("happy");
 
     if (state.streak > 0 && state.streak % STREAK_BONUS_AT === 0) {
       state.score += 1;
@@ -239,9 +288,18 @@ answerForm.addEventListener("submit", (event) => {
   } else {
     state.streak = 0;
     state.wrongAttempts += 1;
+    state.consecutiveWrong += 1;
     setFeedback(strings.wrong, false);
     if (state.wrongAttempts >= 2) {
       giveHint();
+    }
+    if (state.wrongAttempts === 1) {
+      setKittenMood("neutral");
+      playKitten("shake");
+    }
+    if (state.consecutiveWrong > 3) {
+      setKittenCrying(true);
+      setKittenMood("sad");
     }
     updateStats();
   }
@@ -268,3 +326,4 @@ document.getElementById("playAgainBtn").addEventListener("click", startGame);
 endOverlay.hidden = true;
 setLanguage(state.lang);
 startGame();
+startIdleLoop();

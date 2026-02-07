@@ -196,12 +196,13 @@ body {
 
 .answer-row {
   display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 6px;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  width: 100%;
 }
 
 .kitten {
+  grid-column: 1;
   position: relative;
   width: 96px;
   height: 130px;
@@ -366,9 +367,10 @@ body {
 }
 
 .answer {
+  grid-column: 2;
   display: flex;
   gap: 12px;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
 }
 
@@ -513,6 +515,7 @@ body {
   }
   .answer-row {
     grid-template-columns: 1fr;
+    justify-items: center;
   }
   .difficulty {
     flex-direction: column;
