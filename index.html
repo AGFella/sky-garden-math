@@ -31,7 +31,6 @@
   <main class="layout">
     <section class="card">
       <div class="difficulty">
-        <span class="label" data-i18n="difficulty">Сложность</span>
         <div class="difficulty-buttons">
           <button class="btn" data-difficulty="easy" data-i18n="easy">Легко</button>
           <button class="btn" data-difficulty="medium" data-i18n="medium">Средне</button>
@@ -43,10 +42,30 @@
         <span class="problem-text" id="problemText">6 × 3 = ?</span>
       </div>
 
-      <form id="answerForm" class="answer">
-        <input id="answerInput" type="number" inputmode="numeric" autocomplete="off" />
-        <button class="btn primary" type="submit" data-i18n="submit">Ответить</button>
-      </form>
+      <div class="answer-row">
+        <div class="kitten" id="kitten" aria-hidden="true">
+          <div class="kitten-head">
+            <div class="ear ear-left"></div>
+            <div class="ear ear-right"></div>
+            <div class="face">
+              <div class="eye eye-left"></div>
+              <div class="eye eye-right"></div>
+              <div class="nose"></div>
+              <div class="mouth"></div>
+            </div>
+          </div>
+          <div class="kitten-body">
+            <div class="leg leg-left"></div>
+            <div class="leg leg-right"></div>
+          </div>
+          <div class="tear tear-left"></div>
+          <div class="tear tear-right"></div>
+        </div>
+        <form id="answerForm" class="answer">
+          <input id="answerInput" type="number" inputmode="numeric" autocomplete="off" />
+          <button class="btn primary" type="submit" data-i18n="submit">Ответить</button>
+        </form>
+      </div>
 
       <div class="feedback" id="feedback" aria-live="polite"></div>
       <div class="hint" id="hint" aria-live="polite"></div>
