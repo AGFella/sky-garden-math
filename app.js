@@ -100,7 +100,9 @@ const endSummary = document.getElementById("endSummary");
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
+const CORRECT_FEEDBACK_MS = 5000;
 let idleTimer = null;
+let feedbackTimer = null;
 
 function clearKittenAnimations() {
   kitten.classList.remove("idle", "happy", "shake", "cry");
@@ -200,6 +202,17 @@ function updateStats() {
 function setFeedback(text, isCorrect) {
   feedback.textContent = text;
   feedback.style.color = isCorrect ? "#0f7d4f" : "#c93f3f";
+  feedback.classList.toggle("correct", isCorrect);
+  if (feedbackTimer) {
+    clearTimeout(feedbackTimer);
+    feedbackTimer = null;
+  }
+  if (isCorrect && text) {
+    feedbackTimer = setTimeout(() => {
+      feedback.textContent = "";
+      feedback.classList.remove("correct");
+    }, CORRECT_FEEDBACK_MS);
+  }
 }
 
 function setHint(text) {
@@ -214,7 +227,6 @@ function nextQuestion() {
   state.currentQuestion = generateQuestion(state.difficulty);
   state.wrongAttempts = 0;
   updateProblemText();
-  setFeedback("", true);
   setHint("");
   answerInput.value = "";
   answerInput.focus();

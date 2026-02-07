@@ -387,6 +387,11 @@ body {
   min-height: 24px;
   text-align: center;
   font-weight: 600;
+  font-size: 16px;
+}
+
+.feedback.correct {
+  font-size: 20px;
 }
 
 .hint {
