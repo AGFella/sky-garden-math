@@ -46,6 +46,29 @@ const i18n = {
     end_title: "Missione completata!",
     end_summary: (score, total) => `Risposte corrette: ${score} su ${total}.`,
   }
+  ,
+  en: {
+    title: "Sky Garden Rescue",
+    subtitle: "Help the gardener and the kitty save the islands",
+    difficulty: "Difficulty",
+    easy: "Easy",
+    medium: "Medium",
+    hard: "Hard",
+    submit: "Submit",
+    restart: "Restart",
+    progress: "Progress",
+    streak: "Streak",
+    score: "Score",
+    ship: "Airship",
+    story: "Each correct answer makes seeds grow and brings color back to the islands.",
+    play_again: "Play again",
+    correct: "Great! The airship speeds up!",
+    wrong: "Almost! Try again.",
+    hint_mul: (a, b) => `Hint: ${a} + ${a} + ... (${b} times)`,
+    hint_div: (a, b) => `Hint: what number times ${b} makes ${a}?`,
+    end_title: "Mission complete!",
+    end_summary: (score, total) => `Correct answers: ${score} out of ${total}.`,
+  }
 };
 
 const state = {
