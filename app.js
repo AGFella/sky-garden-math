@@ -1,4 +1,4 @@
-const TOTAL_QUESTIONS = 15;
+const TOTAL_QUESTIONS = 10;
 const STREAK_BONUS_AT = 3;
 const UNLOCK_TARGET = 10;
 
