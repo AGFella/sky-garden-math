@@ -29,7 +29,11 @@ const i18n = {
     yes: "Да",
     no: "Нет",
     time_label: "Время",
-    correct: "Отлично! Корабль летит быстрее!",
+    encourage_1: "Ты молодец!",
+    encourage_2: "Супер!",
+    encourage_3: "Так держать!",
+    encourage_4: "Отличная работа!",
+    correct: "Отлично!",
     wrong: "Почти! Попробуй еще раз.",
     hint_mul: (a, b) => `Подсказка: ${a} + ${a} + ... (всего ${b} раз)` ,
     hint_div: (a, b) => `Подсказка: какое число умножить на ${b}, чтобы получить ${a}?`,
@@ -62,7 +66,11 @@ const i18n = {
     yes: "Si",
     no: "No",
     time_label: "Tempo",
-    correct: "Ben fatto! La nave vola piu veloce!",
+    encourage_1: "Bravo!",
+    encourage_2: "Ottimo!",
+    encourage_3: "Continua cosi!",
+    encourage_4: "Grandioso!",
+    correct: "Ben fatto!",
     wrong: "Quasi! Riprova.",
     hint_mul: (a, b) => `Suggerimento: ${a} + ${a} + ... (${b} volte)`,
     hint_div: (a, b) => `Suggerimento: che numero per ${b} fa ${a}?`,
@@ -96,7 +104,11 @@ const i18n = {
     yes: "Yes",
     no: "No",
     time_label: "Time",
-    correct: "Great! The airship speeds up!",
+    encourage_1: "Awesome!",
+    encourage_2: "Well done!",
+    encourage_3: "Keep it up!",
+    encourage_4: "Great work!",
+    correct: "Great!",
     wrong: "Almost! Try again.",
     hint_mul: (a, b) => `Hint: ${a} + ${a} + ... (${b} times)`,
     hint_div: (a, b) => `Hint: what number times ${b} makes ${a}?`,
@@ -338,7 +350,20 @@ function randomPetalColor() {
 }
 
 function setFeedback(text, isCorrect) {
-  feedback.textContent = text;
+  const strings = i18n[state.lang];
+  if (isCorrect) {
+    const messages = [
+      strings.correct,
+      strings.encourage_1,
+      strings.encourage_2,
+      strings.encourage_3,
+      strings.encourage_4
+    ].filter(Boolean);
+    const msg = messages[Math.floor(Math.random() * messages.length)];
+    feedback.textContent = msg;
+  } else {
+    feedback.textContent = text;
+  }
   feedback.style.color = isCorrect ? "#0f7d4f" : "#c93f3f";
   feedback.classList.toggle("correct", isCorrect);
   if (feedbackTimer) {
