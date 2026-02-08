@@ -5,11 +5,15 @@ Theme: Sky Garden Rescue. Correct answers power the airship and restore floating
 
 ## Features
 - Three difficulty levels (easy/medium/hard)
-- 10-15 question sessions with progress bar
+- 10-question rounds with segmented progress (green/red)
+- Round number increments with “Next round”
 - Streak bonus scoring
 - Gentle hints after 2 wrong attempts
-- Russian and Italian UI toggle
+- Russian, Italian, and English UI toggle
 - Playful sky theme with floating islands
+- Captain kitten with animations (happy/shake/cry)
+- Flower that grows with correct answers and moves to islands at round end
+- Difficulty unlocks by round number (Medium at round 2, Hard at round 4)
 
 ## Run locally
 Open `index.html` in your browser.
@@ -21,4 +25,4 @@ Open `index.html` in your browser.
 
 ## Notes
 - Division questions are generated with integer answers only.
-- You can adjust question ranges in `app.js`.
+- You can adjust question ranges and unlock rules in `app.js`.
