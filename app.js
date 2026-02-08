@@ -18,6 +18,7 @@ const i18n = {
     ship: "Воздушный корабль",
     story: "Каждое правильное решение оживляет семена и возвращает цвет на острова.",
     play_again: "Играть снова",
+    next_round: "Следующий раунд",
     correct: "Отлично! Корабль летит быстрее!",
     wrong: "Почти! Попробуй еще раз.",
     hint_mul: (a, b) => `Подсказка: ${a} + ${a} + ... (всего ${b} раз)` ,
@@ -40,6 +41,7 @@ const i18n = {
     ship: "Nave volante",
     story: "Ogni risposta giusta fa crescere i semi e riporta colore alle isole.",
     play_again: "Gioca ancora",
+    next_round: "Prossimo round",
     correct: "Ben fatto! La nave vola piu veloce!",
     wrong: "Quasi! Riprova.",
     hint_mul: (a, b) => `Suggerimento: ${a} + ${a} + ... (${b} volte)`,
@@ -63,6 +65,7 @@ const i18n = {
     ship: "Airship",
     story: "Each correct answer makes seeds grow and brings color back to the islands.",
     play_again: "Play again",
+    next_round: "Next round",
     correct: "Great! The airship speeds up!",
     wrong: "Almost! Try again.",
     hint_mul: (a, b) => `Hint: ${a} + ${a} + ... (${b} times)`,
@@ -76,7 +79,8 @@ const state = {
   lang: "en",
   difficulty: "easy",
   currentIndex: 0,
-  correctCount: 0,
+  roundCorrect: 0,
+  totalCorrect: 0,
   score: 0,
   streak: 0,
   consecutiveWrong: 0,
@@ -112,6 +116,8 @@ const endSummary = document.getElementById("endSummary");
 const difficultyButtons = Array.from(document.querySelectorAll("[data-difficulty]"));
 const flower = document.getElementById("flower");
 const islands = Array.from(document.querySelectorAll(".island"));
+const nextRoundBtn = document.getElementById("nextRoundBtn");
+const playAgainBtn = document.getElementById("playAgainBtn");
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
@@ -296,8 +302,25 @@ function nextQuestion() {
 
 function startGame() {
   state.currentIndex = 0;
-  state.correctCount = 0;
+  state.roundCorrect = 0;
+  state.totalCorrect = 0;
   state.score = 0;
+  state.streak = 0;
+  state.consecutiveWrong = 0;
+  state.wrongAttempts = 0;
+  state.currentQuestion = null;
+  state.results = [];
+  updateStats();
+  endOverlay.hidden = true;
+  setKittenCrying(false);
+  setKittenMood(null);
+  updateFlowerProgress(0);
+  nextQuestion();
+}
+
+function nextRound() {
+  state.currentIndex = 0;
+  state.roundCorrect = 0;
   state.streak = 0;
   state.consecutiveWrong = 0;
   state.wrongAttempts = 0;
@@ -371,11 +394,11 @@ function moveFlowerToIsland() {
 
 function endGame() {
   let starHtml = "";
-  if (state.correctCount === TOTAL_QUESTIONS) {
+  if (state.roundCorrect === TOTAL_QUESTIONS) {
     starHtml = "<span class=\"star gold\">★</span><span class=\"star gold\">★</span><span class=\"star gold\">★</span>";
-  } else if (state.correctCount >= 4) {
+  } else if (state.roundCorrect >= 4) {
     starHtml = "<span class=\"star green\">★</span><span class=\"star green\">★</span><span class=\"star gray\">☆</span>";
-  } else if (state.correctCount > 1) {
+  } else if (state.roundCorrect > 1) {
     starHtml = "<span class=\"star green\">★</span><span class=\"star gray\">☆</span><span class=\"star gray\">☆</span>";
   } else {
     starHtml = "<span class=\"star gray\">☆</span><span class=\"star gray\">☆</span><span class=\"star gray\">☆</span>";
@@ -384,7 +407,7 @@ function endGame() {
 
   const strings = i18n[state.lang];
   endTitle.textContent = strings.end_title;
-  endSummary.textContent = strings.end_summary(state.correctCount, TOTAL_QUESTIONS);
+  endSummary.textContent = strings.end_summary(state.roundCorrect, TOTAL_QUESTIONS);
   endOverlay.hidden = false;
   moveFlowerToIsland();
 }
@@ -398,7 +421,8 @@ answerForm.addEventListener("submit", (event) => {
 
   if (numeric === state.currentQuestion.answer) {
     state.score += 1;
-    state.correctCount += 1;
+    state.roundCorrect += 1;
+    state.totalCorrect += 1;
     state.streak += 1;
     state.consecutiveWrong = 0;
     state.currentIndex += 1;
@@ -430,7 +454,7 @@ answerForm.addEventListener("submit", (event) => {
     }
 
     updateStats();
-    updateFlowerProgress(state.correctCount);
+    updateFlowerProgress(state.roundCorrect);
     setTimeout(nextQuestion, 500);
   } else {
     state.wrongAttempts += 1;
@@ -488,7 +512,7 @@ difficultyButtons.forEach((btn) => {
     setKittenCrying(false);
     setKittenMood(null);
     updateStats();
-    updateFlowerProgress(state.correctCount);
+    updateFlowerProgress(state.roundCorrect);
     nextQuestion();
   });
 });
@@ -501,12 +525,18 @@ Array.from(document.querySelectorAll("[data-lang]")).forEach((btn) => {
 
 
 
-document.getElementById("restartBtn").addEventListener("click", startGame);
-document.getElementById("playAgainBtn").addEventListener("click", startGame);
+// handled below with null checks
 
 endOverlay.hidden = true;
 setLanguage(state.lang);
 startGame();
 startIdleLoop();
 updateDifficultyUI();
-updateFlowerProgress(state.correctCount);
+updateFlowerProgress(state.roundCorrect);
+
+if (nextRoundBtn) {
+  nextRoundBtn.addEventListener("click", nextRound);
+}
+if (playAgainBtn) {
+  playAgainBtn.addEventListener("click", startGame);
+}

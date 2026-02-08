@@ -82,9 +82,7 @@
       <div class="feedback" id="feedback" aria-live="polite"></div>
       <div class="hint" id="hint" aria-live="polite"></div>
 
-      <div class="controls">
-        <button class="btn ghost" id="restartBtn" data-i18n="restart">Начать заново</button>
-      </div>
+      <div class="controls"></div>
     </section>
 
     <aside class="panel">
@@ -137,7 +135,10 @@
       <div class="stars" id="stars"></div>
       <h2 id="endTitle"></h2>
       <p id="endSummary"></p>
-      <button class="btn primary" id="playAgainBtn" data-i18n="play_again">Играть снова</button>
+      <div class="end-actions">
+        <button class="btn primary" id="nextRoundBtn" data-i18n="next_round">Следующий раунд</button>
+        <button class="btn ghost" id="playAgainBtn" data-i18n="restart">Начать заново</button>
+      </div>
     </div>
   </div>
 

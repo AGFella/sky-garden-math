@@ -537,12 +537,14 @@ body {
   grid-template-columns: repeat(10, 1fr);
   gap: 4px;
   margin: 8px 0 4px;
+  width: 100%;
 }
 
 .progress-steps .step {
   height: 12px;
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .progress-steps .step.correct {
@@ -616,6 +618,13 @@ body {
   text-align: center;
   width: min(360px, 90vw);
   box-shadow: var(--shadow);
+}
+
+.end-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .stars {
