@@ -76,11 +76,13 @@ const state = {
   lang: "en",
   difficulty: "easy",
   currentIndex: 0,
+  correctCount: 0,
   score: 0,
   streak: 0,
   consecutiveWrong: 0,
   wrongAttempts: 0,
   currentQuestion: null,
+  results: [],
   unlocked: {
     medium: false,
     hard: false,
@@ -97,7 +99,7 @@ const answerForm = document.getElementById("answerForm");
 const answerInput = document.getElementById("answerInput");
 const feedback = document.getElementById("feedback");
 const hint = document.getElementById("hint");
-const progressBar = document.getElementById("progressBar");
+const progressSteps = document.getElementById("progressSteps");
 const progressText = document.getElementById("progressText");
 const streakText = document.getElementById("streakText");
 const scoreText = document.getElementById("scoreText");
@@ -225,9 +227,17 @@ function updateProblemText() {
 
 function updateStats() {
   progressText.textContent = `${state.currentIndex} / ${TOTAL_QUESTIONS}`;
-  progressBar.style.width = `${(state.currentIndex / TOTAL_QUESTIONS) * 100}%`;
   streakText.textContent = state.streak;
   scoreText.textContent = state.score;
+  if (progressSteps) {
+    const steps = Array.from(progressSteps.querySelectorAll(".step"));
+    steps.forEach((step, index) => {
+      step.classList.remove("correct", "wrong");
+      const result = state.results[index];
+      if (result === true) step.classList.add("correct");
+      if (result === false) step.classList.add("wrong");
+    });
+  }
 }
 
 function updateFlowerProgress(count) {
@@ -286,11 +296,13 @@ function nextQuestion() {
 
 function startGame() {
   state.currentIndex = 0;
+  state.correctCount = 0;
   state.score = 0;
   state.streak = 0;
   state.consecutiveWrong = 0;
   state.wrongAttempts = 0;
   state.currentQuestion = null;
+  state.results = [];
   updateStats();
   endOverlay.hidden = true;
   setKittenCrying(false);
@@ -358,13 +370,21 @@ function moveFlowerToIsland() {
 }
 
 function endGame() {
-  const accuracy = state.score / TOTAL_QUESTIONS;
-  const starCount = accuracy >= 0.9 ? 3 : accuracy >= 0.7 ? 2 : 1;
-  stars.textContent = "★".repeat(starCount) + "☆".repeat(3 - starCount);
+  let starHtml = "";
+  if (state.correctCount === TOTAL_QUESTIONS) {
+    starHtml = "<span class=\"star gold\">★ ★ ★</span>";
+  } else if (state.correctCount >= 4) {
+    starHtml = "<span class=\"star green\">★ ★</span><span class=\"star gray\">☆</span>";
+  } else if (state.correctCount > 1) {
+    starHtml = "<span class=\"star green\">★</span><span class=\"star gray\">☆ ☆</span>";
+  } else {
+    starHtml = "<span class=\"star gray\">☆ ☆ ☆</span>";
+  }
+  stars.innerHTML = starHtml;
 
   const strings = i18n[state.lang];
   endTitle.textContent = strings.end_title;
-  endSummary.textContent = strings.end_summary(state.score, TOTAL_QUESTIONS);
+  endSummary.textContent = strings.end_summary(state.correctCount, TOTAL_QUESTIONS);
   endOverlay.hidden = false;
   moveFlowerToIsland();
 }
@@ -378,9 +398,11 @@ answerForm.addEventListener("submit", (event) => {
 
   if (numeric === state.currentQuestion.answer) {
     state.score += 1;
+    state.correctCount += 1;
     state.streak += 1;
     state.consecutiveWrong = 0;
     state.currentIndex += 1;
+    state.results.push(true);
     setFeedback(strings.correct, true);
     setHint("");
     celebrateSeed();
@@ -408,25 +430,32 @@ answerForm.addEventListener("submit", (event) => {
     }
 
     updateStats();
-    updateFlowerProgress(state.currentIndex);
+    updateFlowerProgress(state.correctCount);
     setTimeout(nextQuestion, 500);
   } else {
-    state.streak = 0;
     state.wrongAttempts += 1;
-    state.consecutiveWrong += 1;
     setFeedback(strings.wrong, false);
-    if (state.wrongAttempts >= 2) {
-      giveHint();
-    }
     if (state.wrongAttempts === 1) {
+      state.streak = 0;
       setKittenMood("neutral");
       playKitten("shake");
     }
-    if (state.consecutiveWrong > 3) {
-      setKittenCrying(true);
-      setKittenMood("sad");
+    if (state.wrongAttempts >= 2) {
+      giveHint();
+      state.consecutiveWrong += 1;
+      if (state.consecutiveWrong > 3) {
+        setKittenCrying(true);
+        setKittenMood("sad");
+      }
+      state.currentIndex += 1;
+      state.results.push(false);
+      updateStats();
+      if (state.currentIndex >= TOTAL_QUESTIONS) {
+        endGame();
+      } else {
+        setTimeout(nextQuestion, 500);
+      }
     }
-    updateStats();
   }
 });
 
@@ -459,7 +488,7 @@ difficultyButtons.forEach((btn) => {
     setKittenCrying(false);
     setKittenMood(null);
     updateStats();
-    updateFlowerProgress(state.currentIndex);
+    updateFlowerProgress(state.correctCount);
     nextQuestion();
   });
 });
@@ -480,4 +509,4 @@ setLanguage(state.lang);
 startGame();
 startIdleLoop();
 updateDifficultyUI();
-updateFlowerProgress(state.currentIndex);
+updateFlowerProgress(state.correctCount);
