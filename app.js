@@ -345,6 +345,7 @@ function giveHint() {
 }
 
 function celebrateSeed() {
+  if (!seed) return;
   seed.classList.add("grow");
   setTimeout(() => seed.classList.remove("grow"), 300);
 }
