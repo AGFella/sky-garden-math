@@ -345,6 +345,16 @@ function moveFlowerToIsland() {
     clone.style.transform = "scale(0.6)";
     clone.style.opacity = "1";
   });
+
+  setTimeout(() => {
+    if (!island) return;
+    clone.style.position = "absolute";
+    clone.style.left = "50%";
+    clone.style.top = "0%";
+    clone.style.transform = "translate(-50%, -60%) scale(0.55)";
+    clone.style.transition = "none";
+    island.appendChild(clone);
+  }, 950);
 }
 
 function endGame() {

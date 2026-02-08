@@ -397,7 +397,7 @@ body {
 .stem {
   position: absolute;
   width: 10px;
-  background: #4aa35a;
+  background: linear-gradient(180deg, #58b86a, #3f9650);
   left: 50%;
   transform: translateX(-50%);
   border-radius: 6px;
@@ -419,7 +419,8 @@ body {
   position: absolute;
   width: 22px;
   height: 22px;
-  background: #f6c343;
+  background: radial-gradient(circle at 40% 40%, #ffe27a, #f6c343);
+  border: 2px solid #e1a930;
   border-radius: 50%;
   left: 50%;
   bottom: 78px;
@@ -432,10 +433,11 @@ body {
   position: absolute;
   width: 18px;
   height: 30px;
-  border-radius: 10px 10px 12px 12px;
+  border-radius: 12px 12px 14px 14px;
   left: 50%;
   bottom: 78px;
   transform-origin: 50% 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -451,7 +453,7 @@ body {
   position: absolute;
   width: 26px;
   height: 14px;
-  background: #3d964f;
+  background: linear-gradient(135deg, #4fb569, #2f8f4a);
   border-radius: 14px 0 14px 0;
   left: calc(50% + 6px);
   bottom: 36px;
@@ -468,7 +470,7 @@ body {
   position: absolute;
   transition: transform 0.9s ease, left 0.9s ease, top 0.9s ease, opacity 0.9s ease;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }
 
 .answer input {
