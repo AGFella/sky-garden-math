@@ -372,13 +372,13 @@ function moveFlowerToIsland() {
 function endGame() {
   let starHtml = "";
   if (state.correctCount === TOTAL_QUESTIONS) {
-    starHtml = "<span class=\"star gold\">★ ★ ★</span>";
+    starHtml = "<span class=\"star gold\">★</span><span class=\"star gold\">★</span><span class=\"star gold\">★</span>";
   } else if (state.correctCount >= 4) {
-    starHtml = "<span class=\"star green\">★ ★</span><span class=\"star gray\">☆</span>";
+    starHtml = "<span class=\"star green\">★</span><span class=\"star green\">★</span><span class=\"star gray\">☆</span>";
   } else if (state.correctCount > 1) {
-    starHtml = "<span class=\"star green\">★</span><span class=\"star gray\">☆ ☆</span>";
+    starHtml = "<span class=\"star green\">★</span><span class=\"star gray\">☆</span><span class=\"star gray\">☆</span>";
   } else {
-    starHtml = "<span class=\"star gray\">☆ ☆ ☆</span>";
+    starHtml = "<span class=\"star gray\">☆</span><span class=\"star gray\">☆</span><span class=\"star gray\">☆</span>";
   }
   stars.innerHTML = starHtml;
 

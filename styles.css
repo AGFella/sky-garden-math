@@ -526,6 +526,12 @@ body {
 
 .stat:last-child { margin-bottom: 0; }
 
+.progress-stat {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
 .progress-steps {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
@@ -534,8 +540,8 @@ body {
 }
 
 .progress-steps .step {
-  height: 10px;
-  border-radius: 10px;
+  height: 12px;
+  border-radius: 4px;
   background: rgba(0, 0, 0, 0.08);
 }
 
@@ -613,14 +619,15 @@ body {
 }
 
 .stars {
-  font-size: 28px;
-  letter-spacing: 4px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
   margin-bottom: 12px;
 }
 
 .star {
   font-size: 28px;
-  letter-spacing: 4px;
+  display: inline-block;
 }
 
 .star.gold { color: #f2b233; }
