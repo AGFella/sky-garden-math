@@ -267,8 +267,26 @@ function updateFlowerProgress(count) {
   pieces.forEach((selector, index) => {
     const el = flower.querySelector(selector);
     if (!el) return;
-    el.classList.toggle("on", index < count);
+    const shouldBeOn = index < count;
+    el.classList.toggle("on", shouldBeOn);
+    if (shouldBeOn && el.classList.contains("petal") && !el.dataset.colorSet) {
+      el.style.background = randomPetalColor();
+      el.dataset.colorSet = "true";
+    }
+    if (!shouldBeOn && el.classList.contains("petal")) {
+      el.dataset.colorSet = "";
+    }
   });
+}
+
+function randomPetalColor() {
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = 65 + Math.floor(Math.random() * 20);
+  const lightness = 55 + Math.floor(Math.random() * 10);
+  if ((hue >= 85 && hue <= 150)) {
+    return randomPetalColor();
+  }
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
 function setFeedback(text, isCorrect) {

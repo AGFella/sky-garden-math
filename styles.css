@@ -406,24 +406,24 @@ body {
 }
 
 .stem-1 {
-  height: 28px;
+  height: 36px;
   bottom: 22px;
 }
 
 .stem-2 {
-  height: 28px;
-  bottom: 50px;
+  height: 36px;
+  bottom: 58px;
 }
 
 .center {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   background: radial-gradient(circle at 40% 40%, #ffe27a, #f6c343);
   border: 2px solid #e1a930;
   border-radius: 50%;
   left: 50%;
-  bottom: 78px;
+  bottom: 96px;
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -435,19 +435,22 @@ body {
   height: 30px;
   border-radius: 12px 12px 14px 14px;
   left: 50%;
-  bottom: 78px;
-  transform-origin: 50% 90%;
+  bottom: 96px;
+  transform-origin: 50% 100%;
+  --petal-rot: 0deg;
+  --petal-radius: 20px;
+  transform: translate(-50%, -50%) rotate(var(--petal-rot)) translate(0, calc(var(--petal-radius) * -1));
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.p1 { background: #ff7a7a; transform: translateX(-50%) rotate(0deg) translateY(-24px); }
-.p2 { background: #7ac7ff; transform: translateX(-50%) rotate(60deg) translateY(-24px); }
-.p3 { background: #ffb56b; transform: translateX(-50%) rotate(120deg) translateY(-24px); }
-.p4 { background: #b58bff; transform: translateX(-50%) rotate(180deg) translateY(-24px); }
-.p5 { background: #ff7ad1; transform: translateX(-50%) rotate(240deg) translateY(-24px); }
-.p6 { background: #7affb0; transform: translateX(-50%) rotate(300deg) translateY(-24px); }
+.p1 { --petal-rot: 25deg; }
+.p2 { --petal-rot: 85deg; }
+.p3 { --petal-rot: 145deg; }
+.p4 { --petal-rot: 205deg; }
+.p5 { --petal-rot: 265deg; }
+.p6 { --petal-rot: 325deg; }
 
 .leaf {
   position: absolute;
