@@ -13,6 +13,7 @@ const i18n = {
     submit: "Ответить",
     restart: "Начать заново",
     progress: "Прогресс",
+    round: "Раунд",
     streak: "Серия",
     score: "Очки",
     ship: "Воздушный корабль",
@@ -36,6 +37,7 @@ const i18n = {
     submit: "Rispondi",
     restart: "Ricomincia",
     progress: "Progresso",
+    round: "Round",
     streak: "Serie",
     score: "Punti",
     ship: "Nave volante",
@@ -60,6 +62,7 @@ const i18n = {
     submit: "Submit",
     restart: "Restart",
     progress: "Progress",
+    round: "Round",
     streak: "Streak",
     score: "Score",
     ship: "Airship",
@@ -81,6 +84,7 @@ const state = {
   currentIndex: 0,
   roundCorrect: 0,
   totalCorrect: 0,
+  roundNumber: 1,
   score: 0,
   streak: 0,
   consecutiveWrong: 0,
@@ -232,7 +236,7 @@ function updateProblemText() {
 }
 
 function updateStats() {
-  progressText.textContent = `${state.currentIndex} / ${TOTAL_QUESTIONS}`;
+  progressText.textContent = `${state.roundNumber}`;
   streakText.textContent = state.streak;
   scoreText.textContent = state.score;
   if (progressSteps) {
@@ -304,6 +308,7 @@ function startGame() {
   state.currentIndex = 0;
   state.roundCorrect = 0;
   state.totalCorrect = 0;
+  state.roundNumber = 1;
   state.score = 0;
   state.streak = 0;
   state.consecutiveWrong = 0;
@@ -321,6 +326,7 @@ function startGame() {
 function nextRound() {
   state.currentIndex = 0;
   state.roundCorrect = 0;
+  state.roundNumber += 1;
   state.streak = 0;
   state.consecutiveWrong = 0;
   state.wrongAttempts = 0;
