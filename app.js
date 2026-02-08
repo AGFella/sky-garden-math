@@ -95,10 +95,6 @@ const state = {
     medium: false,
     hard: false,
   },
-  correctCounts: {
-    easy: 0,
-    medium: 0,
-  },
   islandIndex: 0,
 };
 
@@ -319,11 +315,14 @@ function startGame() {
   state.wrongAttempts = 0;
   state.currentQuestion = null;
   state.results = [];
+  state.unlocked.medium = false;
+  state.unlocked.hard = false;
   updateStats();
   endOverlay.hidden = true;
   setKittenCrying(false);
   setKittenMood(null);
   updateFlowerProgress(0);
+  updateDifficultyUI();
   nextQuestion();
 }
 
@@ -336,11 +335,14 @@ function nextRound() {
   state.wrongAttempts = 0;
   state.currentQuestion = null;
   state.results = [];
+  if (state.roundNumber >= 2) state.unlocked.medium = true;
+  if (state.roundNumber >= 4) state.unlocked.hard = true;
   updateStats();
   endOverlay.hidden = true;
   setKittenCrying(false);
   setKittenMood(null);
   updateFlowerProgress(0);
+  updateDifficultyUI();
   nextQuestion();
 }
 
@@ -444,19 +446,6 @@ answerForm.addEventListener("submit", (event) => {
     setKittenCrying(false);
     setKittenMood(null);
     playKitten("happy");
-
-    if (state.difficulty === "easy") {
-      state.correctCounts.easy += 1;
-      if (state.correctCounts.easy >= UNLOCK_TARGET) {
-        state.unlocked.medium = true;
-      }
-    }
-    if (state.difficulty === "medium") {
-      state.correctCounts.medium += 1;
-      if (state.correctCounts.medium >= UNLOCK_TARGET) {
-        state.unlocked.hard = true;
-      }
-    }
 
     updateDifficultyUI();
 
