@@ -16,10 +16,18 @@ const i18n = {
     round: "Раунд",
     streak: "Серия",
     score: "Очки",
-    ship: "Воздушный корабль",
     story: "Каждое правильное решение оживляет семена и возвращает цвет на острова.",
     play_again: "Играть снова",
     next_round: "Следующий раунд",
+    new_game: "Новая игра",
+    start_game: "Начать игру",
+    timer_label: "Таймер",
+    pause: "Пауза",
+    confirm_quit: "Выйти из игры?",
+    confirm_text: "Текущий прогресс будет потерян.",
+    yes: "Да",
+    no: "Нет",
+    time_label: "Время",
     correct: "Отлично! Корабль летит быстрее!",
     wrong: "Почти! Попробуй еще раз.",
     hint_mul: (a, b) => `Подсказка: ${a} + ${a} + ... (всего ${b} раз)` ,
@@ -40,10 +48,18 @@ const i18n = {
     round: "Round",
     streak: "Serie",
     score: "Punti",
-    ship: "Nave volante",
     story: "Ogni risposta giusta fa crescere i semi e riporta colore alle isole.",
     play_again: "Gioca ancora",
     next_round: "Prossimo round",
+    new_game: "Nuova partita",
+    start_game: "Avvia",
+    timer_label: "Timer",
+    pause: "Pausa",
+    confirm_quit: "Uscire dal gioco?",
+    confirm_text: "I progressi andranno persi.",
+    yes: "Si",
+    no: "No",
+    time_label: "Tempo",
     correct: "Ben fatto! La nave vola piu veloce!",
     wrong: "Quasi! Riprova.",
     hint_mul: (a, b) => `Suggerimento: ${a} + ${a} + ... (${b} volte)`,
@@ -65,10 +81,18 @@ const i18n = {
     round: "Round",
     streak: "Streak",
     score: "Score",
-    ship: "Airship",
     story: "Each correct answer makes seeds grow and brings color back to the islands.",
     play_again: "Play again",
     next_round: "Next round",
+    new_game: "New game",
+    start_game: "Start game",
+    timer_label: "Timer",
+    pause: "Pause",
+    confirm_quit: "Quit the game?",
+    confirm_text: "Current progress will be lost.",
+    yes: "Yes",
+    no: "No",
+    time_label: "Time",
     correct: "Great! The airship speeds up!",
     wrong: "Almost! Try again.",
     hint_mul: (a, b) => `Hint: ${a} + ${a} + ... (${b} times)`,
@@ -86,6 +110,9 @@ const state = {
   totalCorrect: 0,
   roundNumber: 1,
   score: 0,
+  timerEnabled: false,
+  elapsedMs: 0,
+  timerPaused: false,
   streak: 0,
   consecutiveWrong: 0,
   wrongAttempts: 0,
@@ -110,21 +137,34 @@ const streakText = document.getElementById("streakText");
 const scoreText = document.getElementById("scoreText");
 const seed = document.getElementById("seed");
 const kitten = document.getElementById("kitten");
+const timer = document.getElementById("timer");
 const endOverlay = document.getElementById("endOverlay");
 const stars = document.getElementById("stars");
 const endTitle = document.getElementById("endTitle");
 const endSummary = document.getElementById("endSummary");
+const endTime = document.getElementById("endTime");
 const difficultyButtons = Array.from(document.querySelectorAll("[data-difficulty]"));
 const flower = document.getElementById("flower");
 const islands = Array.from(document.querySelectorAll(".island"));
 const nextRoundBtn = document.getElementById("nextRoundBtn");
 const playAgainBtn = document.getElementById("playAgainBtn");
+const startOverlay = document.getElementById("startOverlay");
+const startGameBtn = document.getElementById("startGameBtn");
+const timerToggle = document.getElementById("timerToggle");
+const startDifficultyButtons = Array.from(document.querySelectorAll("[data-start-difficulty]"));
+const timerRow = document.getElementById("timerRow");
+const pauseBtn = document.getElementById("pauseBtn");
+const newGameBtn = document.getElementById("newGameBtn");
+const confirmOverlay = document.getElementById("confirmOverlay");
+const confirmYes = document.getElementById("confirmYes");
+const confirmNo = document.getElementById("confirmNo");
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
 const CORRECT_FEEDBACK_MS = 5000;
 let idleTimer = null;
 let feedbackTimer = null;
+let roundTimer = null;
 
 function clearKittenAnimations() {
   kitten.classList.remove("idle", "happy", "shake", "cry");
@@ -309,6 +349,47 @@ function setHint(text) {
   hint.textContent = text || "";
 }
 
+function formatTime(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
+
+function startTimer() {
+  if (!timer) return;
+  state.elapsedMs = 0;
+  timer.textContent = "00:00";
+  timer.hidden = false;
+  const start = Date.now();
+  if (roundTimer) clearInterval(roundTimer);
+  roundTimer = setInterval(() => {
+    state.elapsedMs = Date.now() - start;
+    timer.textContent = formatTime(state.elapsedMs);
+  }, 500);
+}
+
+function resumeTimer() {
+  if (!timer) return;
+  const base = state.elapsedMs;
+  const start = Date.now();
+  if (roundTimer) clearInterval(roundTimer);
+  roundTimer = setInterval(() => {
+    state.elapsedMs = base + (Date.now() - start);
+    timer.textContent = formatTime(state.elapsedMs);
+  }, 500);
+}
+
+function stopTimer() {
+  if (roundTimer) {
+    clearInterval(roundTimer);
+    roundTimer = null;
+  }
+  if (timer) {
+    timer.hidden = !state.timerEnabled;
+  }
+}
+
 function nextQuestion() {
   if (state.currentIndex >= TOTAL_QUESTIONS) {
     endGame();
@@ -341,6 +422,9 @@ function startGame() {
   setKittenMood(null);
   updateFlowerProgress(0);
   updateDifficultyUI();
+  stopTimer();
+  state.timerPaused = false;
+  if (state.timerEnabled) startTimer();
   nextQuestion();
 }
 
@@ -361,6 +445,9 @@ function nextRound() {
   setKittenMood(null);
   updateFlowerProgress(0);
   updateDifficultyUI();
+  stopTimer();
+  state.timerPaused = false;
+  if (state.timerEnabled) startTimer();
   nextQuestion();
 }
 
@@ -439,6 +526,11 @@ function endGame() {
   const strings = i18n[state.lang];
   endTitle.textContent = strings.end_title;
   endSummary.textContent = strings.end_summary(state.roundCorrect, TOTAL_QUESTIONS);
+  if (state.timerEnabled && endTime) {
+    endTime.textContent = `${strings.time_label}: ${formatTime(state.elapsedMs)}`;
+  } else if (endTime) {
+    endTime.textContent = "";
+  }
   endOverlay.hidden = false;
   moveFlowerToIsland();
 }
@@ -473,7 +565,12 @@ answerForm.addEventListener("submit", (event) => {
 
     updateStats();
     updateFlowerProgress(state.roundCorrect);
-    setTimeout(nextQuestion, 500);
+    if (state.currentIndex >= TOTAL_QUESTIONS) {
+      stopTimer();
+      endGame();
+    } else {
+      setTimeout(nextQuestion, 500);
+    }
   } else {
     state.wrongAttempts += 1;
     setFeedback(strings.wrong, false);
@@ -493,6 +590,7 @@ answerForm.addEventListener("submit", (event) => {
       state.results.push(false);
       updateStats();
       if (state.currentIndex >= TOTAL_QUESTIONS) {
+        stopTimer();
         endGame();
       } else {
         setTimeout(nextQuestion, 500);
@@ -504,6 +602,16 @@ answerForm.addEventListener("submit", (event) => {
 function updateDifficultyUI() {
   difficultyButtons.forEach((btn) => {
     const level = btn.getAttribute("data-difficulty");
+    const isUnlocked =
+      level === "easy" ||
+      (level === "medium" && state.unlocked.medium) ||
+      (level === "hard" && state.unlocked.hard);
+    btn.classList.toggle("locked", !isUnlocked);
+    btn.disabled = !isUnlocked;
+    btn.classList.toggle("active", level === state.difficulty);
+  });
+  startDifficultyButtons.forEach((btn) => {
+    const level = btn.getAttribute("data-start-difficulty");
     const isUnlocked =
       level === "easy" ||
       (level === "medium" && state.unlocked.medium) ||
@@ -545,16 +653,88 @@ Array.from(document.querySelectorAll("[data-lang]")).forEach((btn) => {
 
 // handled below with null checks
 
-endOverlay.hidden = true;
-setLanguage(state.lang);
-startGame();
-startIdleLoop();
-updateDifficultyUI();
-updateFlowerProgress(state.roundCorrect);
-
 if (nextRoundBtn) {
   nextRoundBtn.addEventListener("click", nextRound);
 }
 if (playAgainBtn) {
   playAgainBtn.addEventListener("click", startGame);
+}
+if (startGameBtn) {
+  startGameBtn.addEventListener("click", () => {
+    if (startOverlay) startOverlay.hidden = true;
+    state.timerEnabled = !!(timerToggle && timerToggle.checked);
+    if (timerRow) timerRow.hidden = !state.timerEnabled;
+    startGame();
+  });
+}
+startDifficultyButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    startDifficultyButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.difficulty = btn.getAttribute("data-start-difficulty");
+    updateDifficultyUI();
+  });
+});
+
+endOverlay.hidden = true;
+setLanguage(state.lang);
+if (startOverlay) startOverlay.hidden = false;
+if (timer) timer.hidden = true;
+if (timerRow) timerRow.hidden = true;
+startIdleLoop();
+updateDifficultyUI();
+updateFlowerProgress(state.roundCorrect);
+
+if (pauseBtn) {
+  pauseBtn.addEventListener("click", () => {
+    if (!state.timerEnabled) return;
+    if (state.timerPaused) {
+      state.timerPaused = false;
+      kitten.classList.remove("sleeping");
+      resumeTimer();
+    } else {
+      state.timerPaused = true;
+      kitten.classList.add("sleeping");
+      stopTimer();
+    }
+  });
+}
+
+if (newGameBtn) {
+  newGameBtn.addEventListener("click", () => {
+    if (!state.timerEnabled) {
+      if (confirmOverlay) confirmOverlay.hidden = false;
+      return;
+    }
+    if (!state.timerPaused) {
+      state.timerPaused = true;
+      stopTimer();
+      kitten.classList.add("sleeping");
+    }
+    if (confirmOverlay) confirmOverlay.hidden = false;
+  });
+}
+
+if (confirmYes) {
+  confirmYes.addEventListener("click", () => {
+    if (confirmOverlay) confirmOverlay.hidden = true;
+    if (startOverlay) startOverlay.hidden = false;
+    startGame();
+    stopTimer();
+    if (timerRow) timerRow.hidden = true;
+    state.timerEnabled = false;
+    state.timerPaused = false;
+    kitten.classList.remove("sleeping");
+  });
+}
+
+if (confirmNo) {
+  confirmNo.addEventListener("click", () => {
+    if (confirmOverlay) confirmOverlay.hidden = true;
+    if (state.timerEnabled && state.timerPaused) {
+      state.timerPaused = false;
+      kitten.classList.remove("sleeping");
+      resumeTimer();
+    }
+  });
 }

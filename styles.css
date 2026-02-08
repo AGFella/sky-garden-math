@@ -144,11 +144,27 @@ body {
   box-shadow: var(--shadow);
   display: grid;
   gap: 16px;
+  position: relative;
+}
+
+.timer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .difficulty {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   gap: 16px;
 }
@@ -198,6 +214,12 @@ body {
 .btn.ghost {
   background: transparent;
   border: 1px dashed rgba(0, 0, 0, 0.2);
+}
+
+.btn.small {
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
 }
 
 .problem {
@@ -339,6 +361,41 @@ body {
   animation: kitten-tear 0.8s ease-in-out infinite;
 }
 
+.kitten.sleeping .eye {
+  height: 4px;
+  border-radius: 4px;
+}
+
+.kitten.sleeping .mouth {
+  border-bottom: none;
+  border-top: 2px solid #6b3f2a;
+  border-radius: 0;
+}
+
+.zzz {
+  position: absolute;
+  right: -6px;
+  top: 30px;
+  font-weight: 700;
+  color: #7c8aa8;
+  opacity: 0;
+  transform: translateY(0);
+}
+
+.kitten.sleeping .zzz {
+  opacity: 1;
+  animation: zzz-float 1.6s ease-in-out infinite;
+}
+
+.z1 { animation-delay: 0s; }
+.z2 { animation-delay: 0.3s; }
+.z3 { animation-delay: 0.6s; }
+
+@keyframes zzz-float {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(-16px) translateX(6px); opacity: 0; }
+}
 @keyframes kitten-tear {
   0% { transform: translateY(0); opacity: 0; }
   20% { opacity: 1; }
@@ -629,6 +686,25 @@ body {
   box-shadow: var(--shadow);
 }
 
+.start-section {
+  margin: 12px 0;
+  display: grid;
+  gap: 8px;
+}
+
+.start-label {
+  font-weight: 700;
+}
+
+.start-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin: 10px 0 16px;
+  font-weight: 600;
+}
+
 .end-actions {
   display: flex;
   gap: 10px;
@@ -655,6 +731,10 @@ body {
 @media (max-width: 860px) {
   .layout {
     grid-template-columns: 1fr;
+  }
+  .timer-row {
+    align-self: stretch;
+    justify-content: flex-start;
   }
   .answer-row {
     grid-template-columns: 1fr;

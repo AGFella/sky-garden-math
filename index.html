@@ -36,6 +36,11 @@
           <button class="btn" data-difficulty="medium" data-i18n="medium">Средне</button>
           <button class="btn" data-difficulty="hard" data-i18n="hard">Сложно</button>
         </div>
+        <div class="timer-row" id="timerRow" hidden>
+          <button class="btn ghost small" id="newGameBtn" data-i18n="new_game">Новая игра</button>
+          <button class="btn ghost small" id="pauseBtn" data-i18n="pause">Пауза</button>
+          <div class="timer" id="timer">00:00</div>
+        </div>
       </div>
 
       <div class="problem" aria-live="polite">
@@ -60,6 +65,9 @@
           </div>
           <div class="tear tear-left"></div>
           <div class="tear tear-right"></div>
+          <div class="zzz z1">Z</div>
+          <div class="zzz z2">Z</div>
+          <div class="zzz z3">Z</div>
         </div>
         <form id="answerForm" class="answer">
           <input id="answerInput" type="number" inputmode="numeric" autocomplete="off" />
@@ -130,9 +138,40 @@
       <div class="stars" id="stars"></div>
       <h2 id="endTitle"></h2>
       <p id="endSummary"></p>
+      <p id="endTime"></p>
       <div class="end-actions">
         <button class="btn primary" id="nextRoundBtn" data-i18n="next_round">Следующий раунд</button>
         <button class="btn ghost" id="playAgainBtn" data-i18n="restart">Начать заново</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="startOverlay">
+    <div class="end-card">
+      <h2 data-i18n="new_game">Новая игра</h2>
+      <div class="start-section">
+        <div class="start-label" data-i18n="difficulty">Сложность</div>
+        <div class="difficulty-buttons">
+          <button class="btn active" data-start-difficulty="easy" data-i18n="easy">Легко</button>
+          <button class="btn" data-start-difficulty="medium" data-i18n="medium">Средне</button>
+          <button class="btn" data-start-difficulty="hard" data-i18n="hard">Сложно</button>
+        </div>
+      </div>
+      <label class="start-toggle">
+        <input type="checkbox" id="timerToggle" />
+        <span data-i18n="timer_label">Таймер</span>
+      </label>
+      <button class="btn primary" id="startGameBtn" data-i18n="start_game">Начать</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="confirmOverlay" hidden>
+    <div class="end-card">
+      <h2 data-i18n="confirm_quit">Выйти из игры?</h2>
+      <p data-i18n="confirm_text">Текущий прогресс будет потерян.</p>
+      <div class="end-actions">
+        <button class="btn primary" id="confirmYes" data-i18n="yes">Да</button>
+        <button class="btn ghost" id="confirmNo" data-i18n="no">Нет</button>
       </div>
     </div>
   </div>
