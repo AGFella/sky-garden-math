@@ -240,8 +240,13 @@ body {
   grid-column: 1;
   position: relative;
   width: 96px;
-  height: 130px;
+  height: 180px;
   margin: 0 auto;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .kitten-head {
@@ -411,9 +416,10 @@ body {
 }
 
 .speech {
-  grid-column: 1;
-  align-self: center;
-  justify-self: center;
+  position: absolute;
+  left: 100%;
+  top: 12px;
+  margin-left: 8px;
   max-width: 140px;
   padding: 8px 10px;
   border-radius: 14px;
@@ -423,8 +429,9 @@ body {
   font-size: 12px;
   color: #2b4a2b;
   opacity: 0;
-  transform: translateX(-6px);
+  transform: translateX(0);
   transition: opacity 0.2s ease;
+  white-space: nowrap;
 }
 
 .speech.active {
@@ -475,6 +482,7 @@ body {
   gap: 12px;
   justify-content: center;
   align-items: center;
+  align-self: center;
 }
 
 .flower {
@@ -483,6 +491,7 @@ body {
   width: 160px;
   height: 180px;
   margin: 0 auto;
+  align-self: center;
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 18px;
