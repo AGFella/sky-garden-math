@@ -177,6 +177,7 @@ const confirmNo = document.getElementById("confirmNo");
 const celebrate = document.getElementById("celebrate");
 const confetti = document.getElementById("confetti");
 const speech = document.getElementById("speech");
+const rainbow = document.getElementById("rainbow");
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
@@ -185,6 +186,7 @@ let idleTimer = null;
 let feedbackTimer = null;
 let roundTimer = null;
 let endDelayTimer = null;
+let rainbowTimer = null;
 
 function clearKittenAnimations() {
   kitten.classList.remove("idle", "happy", "shake", "cry");
@@ -421,6 +423,21 @@ function stopTimer() {
   if (timer) {
     timer.hidden = !state.timerEnabled;
   }
+}
+
+function scheduleRainbow() {
+  if (!rainbow) return;
+  const showFor = 6000;
+  const minGap = 10000;
+  const extraGap = Math.floor(Math.random() * 6000);
+  if (rainbowTimer) clearTimeout(rainbowTimer);
+  rainbowTimer = setTimeout(() => {
+    rainbow.classList.add("show");
+    setTimeout(() => {
+      rainbow.classList.remove("show");
+      scheduleRainbow();
+    }, showFor);
+  }, minGap + extraGap);
 }
 
 function nextQuestion() {
@@ -755,6 +772,7 @@ if (timerRow) timerRow.hidden = true;
 startIdleLoop();
 updateDifficultyUI();
 updateFlowerProgress(state.roundCorrect);
+scheduleRainbow();
 
 if (pauseBtn) {
   pauseBtn.addEventListener("click", () => {

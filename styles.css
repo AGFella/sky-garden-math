@@ -64,6 +64,83 @@ body {
   100% { transform: translateX(140vw); }
 }
 
+.rainbow {
+  position: absolute;
+  width: 560px;
+  height: 300px;
+  top: -60px;
+  left: -120px;
+  overflow: hidden;
+  filter: blur(0.4px);
+  opacity: 0;
+  transition: opacity 1s ease;
+  z-index: 0;
+  animation: drift 48s linear infinite;
+  background: url("assets/rainbow.png") no-repeat center bottom;
+  background-size: contain;
+}
+
+.rainbow.show {
+  opacity: 0.45;
+}
+
+.cloud-rainbow {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  filter: blur(0.4px);
+}
+
+.cloud-rainbow::before,
+.cloud-rainbow::after {
+  content: "";
+  position: absolute;
+  background: inherit;
+  border-radius: 999px;
+}
+
+.cloud-left {
+  width: 160px;
+  height: 54px;
+  left: -40px;
+  bottom: 8px;
+}
+
+.cloud-left::before {
+  width: 70px;
+  height: 46px;
+  left: 18px;
+  top: -16px;
+}
+
+.cloud-left::after {
+  width: 90px;
+  height: 50px;
+  right: 12px;
+  top: -10px;
+}
+
+.cloud-right {
+  width: 160px;
+  height: 54px;
+  right: -40px;
+  bottom: 8px;
+}
+
+.cloud-right::before {
+  width: 70px;
+  height: 46px;
+  left: 18px;
+  top: -16px;
+}
+
+.cloud-right::after {
+  width: 90px;
+  height: 50px;
+  right: 12px;
+  top: -10px;
+}
+
 .island {
   position: absolute;
   width: 160px;
