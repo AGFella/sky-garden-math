@@ -532,6 +532,12 @@ body {
   gap: 6px;
 }
 
+.progress-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .progress-steps {
   display: grid;
   grid-template-columns: repeat(10, 1fr);

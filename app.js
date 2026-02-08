@@ -109,6 +109,7 @@ const feedback = document.getElementById("feedback");
 const hint = document.getElementById("hint");
 const progressSteps = document.getElementById("progressSteps");
 const progressText = document.getElementById("progressText");
+const questionText = document.getElementById("questionText");
 const streakText = document.getElementById("streakText");
 const scoreText = document.getElementById("scoreText");
 const seed = document.getElementById("seed");
@@ -237,6 +238,9 @@ function updateProblemText() {
 
 function updateStats() {
   progressText.textContent = `${state.roundNumber}`;
+  if (questionText) {
+    questionText.textContent = `${state.currentIndex} / ${TOTAL_QUESTIONS}`;
+  }
   streakText.textContent = state.streak;
   scoreText.textContent = state.score;
   if (progressSteps) {
