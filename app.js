@@ -116,6 +116,7 @@ const state = {
   timerEnabled: false,
   elapsedMs: 0,
   timerPaused: false,
+  roundActive: false,
   streak: 0,
   consecutiveWrong: 0,
   wrongAttempts: 0,
@@ -431,6 +432,7 @@ function startGame() {
   updateDifficultyUI();
   stopTimer();
   state.timerPaused = false;
+  state.roundActive = true;
   if (timerRow) timerRow.hidden = false;
   if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
   if (timer) timer.hidden = !state.timerEnabled;
@@ -457,6 +459,7 @@ function nextRound() {
   updateDifficultyUI();
   stopTimer();
   state.timerPaused = false;
+  state.roundActive = true;
   if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
   if (timer) timer.hidden = !state.timerEnabled;
   if (state.timerEnabled) startTimer();
@@ -541,6 +544,7 @@ function moveFlowerToIsland() {
 }
 
 function endGame() {
+  state.roundActive = false;
   let starHtml = "";
   if (state.roundCorrect === TOTAL_QUESTIONS) {
     starHtml = "<span class=\"star gold\">★</span><span class=\"star gold\">★</span><span class=\"star gold\">★</span>";
@@ -582,6 +586,7 @@ function endGame() {
 
 answerForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (!state.roundActive) return;
   const input = answerInput.value.trim();
   if (input === "") return;
   const numeric = Number(input);
@@ -589,7 +594,7 @@ answerForm.addEventListener("submit", (event) => {
 
   if (numeric === state.currentQuestion.answer) {
     state.score += 1;
-    state.roundCorrect += 1;
+    state.roundCorrect = Math.min(state.roundCorrect + 1, TOTAL_QUESTIONS);
     state.totalCorrect += 1;
     state.streak += 1;
     state.consecutiveWrong = 0;
