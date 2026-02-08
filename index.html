@@ -30,6 +30,12 @@
 
   <main class="layout">
     <section class="card">
+      <div class="confetti" id="confetti" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
       <div class="difficulty">
         <div class="difficulty-buttons">
           <button class="btn" data-difficulty="easy" data-i18n="easy">Легко</button>
@@ -69,6 +75,7 @@
           <div class="zzz z2">Z</div>
           <div class="zzz z3">Z</div>
         </div>
+        <div class="speech" id="speech"></div>
         <form id="answerForm" class="answer">
           <input id="answerInput" type="number" inputmode="numeric" autocomplete="off" />
           <button class="btn primary" type="submit" data-i18n="submit">Ответить</button>
@@ -89,6 +96,7 @@
 
       <div class="feedback" id="feedback" aria-live="polite"></div>
       <div class="hint" id="hint" aria-live="polite"></div>
+      <div class="celebrate" id="celebrate" aria-live="polite"></div>
 
       <div class="controls"></div>
     </section>
@@ -141,7 +149,7 @@
       <p id="endTime"></p>
       <div class="end-actions">
         <button class="btn primary" id="nextRoundBtn" data-i18n="next_round">Следующий раунд</button>
-        <button class="btn ghost" id="playAgainBtn" data-i18n="restart">Начать заново</button>
+        <button class="btn ghost" id="playAgainBtn" data-i18n="new_game">Новая игра</button>
       </div>
     </div>
   </div>

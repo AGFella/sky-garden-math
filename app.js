@@ -161,6 +161,9 @@ const newGameBtn = document.getElementById("newGameBtn");
 const confirmOverlay = document.getElementById("confirmOverlay");
 const confirmYes = document.getElementById("confirmYes");
 const confirmNo = document.getElementById("confirmNo");
+const celebrate = document.getElementById("celebrate");
+const confetti = document.getElementById("confetti");
+const speech = document.getElementById("speech");
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
@@ -168,6 +171,7 @@ const CORRECT_FEEDBACK_MS = 5000;
 let idleTimer = null;
 let feedbackTimer = null;
 let roundTimer = null;
+let endDelayTimer = null;
 
 function clearKittenAnimations() {
   kitten.classList.remove("idle", "happy", "shake", "cry");
@@ -475,6 +479,23 @@ function celebrateSeed() {
   setTimeout(() => seed.classList.remove("grow"), 300);
 }
 
+function setCelebrateMessage() {
+  if (!celebrate) return;
+  const messages = [
+    "Great job!",
+    "Well done!",
+    "You are the best!",
+    "Fantastic!",
+    "Amazing work!"
+  ];
+  const msg = messages[Math.floor(Math.random() * messages.length)];
+  celebrate.textContent = msg;
+  if (speech) {
+    speech.textContent = msg;
+    speech.classList.add("active");
+  }
+}
+
 function moveFlowerToIsland() {
   if (!flower || islands.length === 0) return;
   const activePieces = flower.querySelectorAll(".on");
@@ -490,6 +511,7 @@ function moveFlowerToIsland() {
 
   const clone = flower.cloneNode(true);
   clone.classList.add("flower-placed");
+  clone.classList.add("flower-bare");
   clone.style.left = `${startRect.left}px`;
   clone.style.top = `${startRect.top}px`;
   clone.style.width = `${startRect.width}px`;
@@ -539,8 +561,23 @@ function endGame() {
   } else if (endTime) {
     endTime.textContent = "";
   }
-  endOverlay.hidden = false;
+  if (confetti) confetti.classList.add("active");
+  kitten.classList.remove("sleeping");
+  kitten.classList.add("celebrating");
+  setKittenMood(null);
+  setCelebrateMessage();
   moveFlowerToIsland();
+  if (endDelayTimer) clearTimeout(endDelayTimer);
+  endDelayTimer = setTimeout(() => {
+    if (confetti) confetti.classList.remove("active");
+    if (celebrate) celebrate.textContent = "";
+    if (speech) {
+      speech.textContent = "";
+      speech.classList.remove("active");
+    }
+    kitten.classList.remove("celebrating");
+    endOverlay.hidden = false;
+  }, 5000);
 }
 
 answerForm.addEventListener("submit", (event) => {
@@ -657,7 +694,9 @@ if (nextRoundBtn) {
   nextRoundBtn.addEventListener("click", nextRound);
 }
 if (playAgainBtn) {
-  playAgainBtn.addEventListener("click", startGame);
+  playAgainBtn.addEventListener("click", () => {
+    if (confirmOverlay) confirmOverlay.hidden = false;
+  });
 }
 if (startGameBtn) {
   startGameBtn.addEventListener("click", () => {
@@ -731,9 +770,20 @@ if (confirmYes) {
     state.timerEnabled = false;
     state.timerPaused = false;
     kitten.classList.remove("sleeping");
+    kitten.classList.remove("celebrating");
     if (pauseBtn) {
       pauseBtn.classList.remove("active");
       pauseBtn.textContent = i18n[state.lang].pause;
+    }
+    if (confetti) confetti.classList.remove("active");
+    if (celebrate) celebrate.textContent = "";
+    if (speech) {
+      speech.textContent = "";
+      speech.classList.remove("active");
+    }
+    if (endDelayTimer) {
+      clearTimeout(endDelayTimer);
+      endDelayTimer = null;
     }
   });
 }
