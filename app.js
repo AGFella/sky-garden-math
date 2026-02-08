@@ -23,6 +23,7 @@ const i18n = {
     start_game: "Начать игру",
     timer_label: "Таймер",
     pause: "Пауза",
+    continue: "Продолжить",
     confirm_quit: "Выйти из игры?",
     confirm_text: "Текущий прогресс будет потерян.",
     yes: "Да",
@@ -55,6 +56,7 @@ const i18n = {
     start_game: "Avvia",
     timer_label: "Timer",
     pause: "Pausa",
+    continue: "Continua",
     confirm_quit: "Uscire dal gioco?",
     confirm_text: "I progressi andranno persi.",
     yes: "Si",
@@ -88,6 +90,7 @@ const i18n = {
     start_game: "Start game",
     timer_label: "Timer",
     pause: "Pause",
+    continue: "Continue",
     confirm_quit: "Quit the game?",
     confirm_text: "Current progress will be lost.",
     yes: "Yes",
@@ -424,6 +427,9 @@ function startGame() {
   updateDifficultyUI();
   stopTimer();
   state.timerPaused = false;
+  if (timerRow) timerRow.hidden = false;
+  if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
+  if (timer) timer.hidden = !state.timerEnabled;
   if (state.timerEnabled) startTimer();
   nextQuestion();
 }
@@ -447,6 +453,8 @@ function nextRound() {
   updateDifficultyUI();
   stopTimer();
   state.timerPaused = false;
+  if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
+  if (timer) timer.hidden = !state.timerEnabled;
   if (state.timerEnabled) startTimer();
   nextQuestion();
 }
@@ -602,22 +610,14 @@ answerForm.addEventListener("submit", (event) => {
 function updateDifficultyUI() {
   difficultyButtons.forEach((btn) => {
     const level = btn.getAttribute("data-difficulty");
-    const isUnlocked =
-      level === "easy" ||
-      (level === "medium" && state.unlocked.medium) ||
-      (level === "hard" && state.unlocked.hard);
-    btn.classList.toggle("locked", !isUnlocked);
-    btn.disabled = !isUnlocked;
+    btn.classList.remove("locked");
+    btn.disabled = false;
     btn.classList.toggle("active", level === state.difficulty);
   });
   startDifficultyButtons.forEach((btn) => {
     const level = btn.getAttribute("data-start-difficulty");
-    const isUnlocked =
-      level === "easy" ||
-      (level === "medium" && state.unlocked.medium) ||
-      (level === "hard" && state.unlocked.hard);
-    btn.classList.toggle("locked", !isUnlocked);
-    btn.disabled = !isUnlocked;
+    btn.classList.remove("locked");
+    btn.disabled = false;
     btn.classList.toggle("active", level === state.difficulty);
   });
 }
@@ -663,7 +663,9 @@ if (startGameBtn) {
   startGameBtn.addEventListener("click", () => {
     if (startOverlay) startOverlay.hidden = true;
     state.timerEnabled = !!(timerToggle && timerToggle.checked);
-    if (timerRow) timerRow.hidden = !state.timerEnabled;
+    if (timerRow) timerRow.hidden = false;
+    if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
+    if (timer) timer.hidden = !state.timerEnabled;
     startGame();
   });
 }
@@ -691,10 +693,14 @@ if (pauseBtn) {
     if (state.timerPaused) {
       state.timerPaused = false;
       kitten.classList.remove("sleeping");
+      pauseBtn.classList.remove("active");
+      pauseBtn.textContent = i18n[state.lang].pause;
       resumeTimer();
     } else {
       state.timerPaused = true;
       kitten.classList.add("sleeping");
+      pauseBtn.classList.add("active");
+      pauseBtn.textContent = i18n[state.lang].continue;
       stopTimer();
     }
   });
@@ -725,6 +731,10 @@ if (confirmYes) {
     state.timerEnabled = false;
     state.timerPaused = false;
     kitten.classList.remove("sleeping");
+    if (pauseBtn) {
+      pauseBtn.classList.remove("active");
+      pauseBtn.textContent = i18n[state.lang].pause;
+    }
   });
 }
 
@@ -734,6 +744,10 @@ if (confirmNo) {
     if (state.timerEnabled && state.timerPaused) {
       state.timerPaused = false;
       kitten.classList.remove("sleeping");
+      if (pauseBtn) {
+        pauseBtn.classList.remove("active");
+        pauseBtn.textContent = i18n[state.lang].pause;
+      }
       resumeTimer();
     }
   });

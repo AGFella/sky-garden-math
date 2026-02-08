@@ -148,9 +148,10 @@ body {
 }
 
 .timer-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 8px;
+  width: 100%;
 }
 
 .timer {
@@ -160,6 +161,19 @@ body {
   padding: 6px 10px;
   font-weight: 700;
   font-size: 14px;
+}
+
+.timer-actions {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+#newGameBtn {
+  grid-column: 2;
+  justify-self: center;
 }
 
 .difficulty {
@@ -690,6 +704,7 @@ body {
   margin: 12px 0;
   display: grid;
   gap: 8px;
+  justify-items: center;
 }
 
 .start-label {
