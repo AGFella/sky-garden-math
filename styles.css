@@ -896,17 +896,13 @@ body {
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   text-align: center;
+  font-size: 18px;
+  font-family: "Trebuchet MS", "Verdana", sans-serif;
 }
 
 .scoreboard {
   display: grid;
   gap: 10px;
-}
-
-.score-tabs {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
 }
 
 .score-table {
