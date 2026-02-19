@@ -139,8 +139,12 @@
         </div>
       </div>
 
-      <div class="panel-section story" id="storyText" data-i18n="story">
-        Каждое правильное решение оживляет семена и возвращает цвет на острова.
+      <div class="panel-section scoreboard">
+        <div class="score-tabs">
+          <button class="btn small active" data-score-tab="notimer" data-i18n="no_timer">Без таймера</button>
+          <button class="btn small" data-score-tab="timer" data-i18n="with_timer">С таймером</button>
+        </div>
+        <div class="score-table" id="scoreTable"></div>
       </div>
     </aside>
   </main>
@@ -151,6 +155,7 @@
       <h2 id="endTitle"></h2>
       <p id="endSummary"></p>
       <p id="endTime"></p>
+      <button class="btn ghost" id="saveScoreBtn" data-i18n="save_score">Сохранить результат</button>
       <div class="end-actions">
         <button class="btn primary" id="nextRoundBtn" data-i18n="next_round">Следующий раунд</button>
         <button class="btn ghost" id="playAgainBtn" data-i18n="new_game">Новая игра</button>
@@ -161,6 +166,10 @@
   <div class="overlay" id="startOverlay">
     <div class="end-card">
       <h2 data-i18n="new_game">Новая игра</h2>
+      <div class="start-section">
+        <div class="start-label" data-i18n="player_name">Имя игрока</div>
+        <input class="name-input" id="playerNameInput" type="text" maxlength="20" />
+      </div>
       <div class="start-section">
         <div class="start-label" data-i18n="difficulty">Сложность</div>
         <div class="difficulty-buttons">

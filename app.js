@@ -22,6 +22,10 @@ const i18n = {
     new_game: "Новая игра",
     start_game: "Начать игру",
     timer_label: "Таймер",
+    player_name: "Имя игрока",
+    save_score: "Сохранить результат",
+    no_timer: "Без таймера",
+    with_timer: "С таймером",
     pause: "Пауза",
     continue: "Продолжить",
     confirm_quit: "Выйти из игры?",
@@ -59,6 +63,10 @@ const i18n = {
     new_game: "Nuova partita",
     start_game: "Avvia",
     timer_label: "Timer",
+    player_name: "Nome giocatore",
+    save_score: "Salva risultato",
+    no_timer: "Senza timer",
+    with_timer: "Con timer",
     pause: "Pausa",
     continue: "Continua",
     confirm_quit: "Uscire dal gioco?",
@@ -97,6 +105,10 @@ const i18n = {
     new_game: "New game",
     start_game: "Start game",
     timer_label: "Timer",
+    player_name: "Player name",
+    save_score: "Save score",
+    no_timer: "No timer",
+    with_timer: "With timer",
     pause: "Pause",
     continue: "Continue",
     confirm_quit: "Quit the game?",
@@ -129,6 +141,8 @@ const state = {
   elapsedMs: 0,
   timerPaused: false,
   roundActive: false,
+  playerName: "",
+  bestRoundTimeMs: null,
   streak: 0,
   consecutiveWrong: 0,
   wrongAttempts: 0,
@@ -177,6 +191,10 @@ const confirmNo = document.getElementById("confirmNo");
 const celebrate = document.getElementById("celebrate");
 const confetti = document.getElementById("confetti");
 const speech = document.getElementById("speech");
+const playerNameInput = document.getElementById("playerNameInput");
+const saveScoreBtn = document.getElementById("saveScoreBtn");
+const scoreTable = document.getElementById("scoreTable");
+const scoreTabs = Array.from(document.querySelectorAll("[data-score-tab]"));
 const rainbow = document.getElementById("rainbow");
 
 const KITTY_ANIM_MS = 600;
@@ -187,6 +205,7 @@ let feedbackTimer = null;
 let roundTimer = null;
 let endDelayTimer = null;
 let rainbowTimer = null;
+let scoreTab = "notimer";
 
 function clearKittenAnimations() {
   kitten.classList.remove("idle", "happy", "shake", "cry");
@@ -425,6 +444,41 @@ function stopTimer() {
   }
 }
 
+function loadScores(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveScores(key, list) {
+  localStorage.setItem(key, JSON.stringify(list));
+}
+
+function renderScoreboard() {
+  if (!scoreTable) return;
+  const strings = i18n[state.lang];
+  if (scoreTab === "notimer") {
+    const scores = loadScores("mathgame_scores_notimer");
+    scores.sort((a, b) => b.maxRound - a.maxRound || b.timestamp - a.timestamp);
+    const rows = scores.slice(0, 10);
+    scoreTable.innerHTML = [
+      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.difficulty}</div></div>`,
+      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.maxRound}</div><div>${s.level}</div></div>`)
+    ].join("");
+  } else {
+    const scores = loadScores("mathgame_scores_timer");
+    scores.sort((a, b) => a.bestTimeMs - b.bestTimeMs || b.rounds - a.rounds);
+    const rows = scores.slice(0, 10);
+    scoreTable.innerHTML = [
+      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.time_label}</div></div>`,
+      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.rounds}</div><div>${formatTime(s.bestTimeMs)}</div></div>`)
+    ].join("");
+  }
+}
+
 function scheduleRainbow() {
   if (!rainbow) return;
   const showFor = 6000;
@@ -459,6 +513,7 @@ function startGame() {
   state.totalCorrect = 0;
   state.roundNumber = 1;
   state.score = 0;
+  state.bestRoundTimeMs = null;
   state.streak = 0;
   state.consecutiveWrong = 0;
   state.wrongAttempts = 0;
@@ -475,6 +530,9 @@ function startGame() {
   stopTimer();
   state.timerPaused = false;
   state.roundActive = true;
+  if (playerNameInput) {
+    state.playerName = playerNameInput.value.trim();
+  }
   if (timerRow) timerRow.hidden = false;
   if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
   if (timer) timer.hidden = !state.timerEnabled;
@@ -502,6 +560,12 @@ function nextRound() {
   stopTimer();
   state.timerPaused = false;
   state.roundActive = true;
+  if (state.timerEnabled) {
+    state.bestRoundTimeMs = Math.min(
+      state.bestRoundTimeMs ?? Number.POSITIVE_INFINITY,
+      state.elapsedMs
+    );
+  }
   if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
   if (timer) timer.hidden = !state.timerEnabled;
   if (state.timerEnabled) startTimer();
@@ -587,6 +651,12 @@ function moveFlowerToIsland() {
 
 function endGame() {
   state.roundActive = false;
+  if (state.timerEnabled) {
+    state.bestRoundTimeMs = Math.min(
+      state.bestRoundTimeMs ?? Number.POSITIVE_INFINITY,
+      state.elapsedMs
+    );
+  }
   let starHtml = "";
   if (state.roundCorrect === TOTAL_QUESTIONS) {
     starHtml = "<span class=\"star gold\">★</span><span class=\"star gold\">★</span><span class=\"star gold\">★</span>";
@@ -752,7 +822,11 @@ if (startGameBtn) {
     if (timerRow) timerRow.hidden = false;
     if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
     if (timer) timer.hidden = !state.timerEnabled;
+    if (playerNameInput) {
+      state.playerName = playerNameInput.value.trim();
+    }
     startGame();
+    renderScoreboard();
   });
 }
 startDifficultyButtons.forEach((btn) => {
@@ -761,6 +835,15 @@ startDifficultyButtons.forEach((btn) => {
     btn.classList.add("active");
     state.difficulty = btn.getAttribute("data-start-difficulty");
     updateDifficultyUI();
+  });
+});
+
+scoreTabs.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    scoreTabs.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    scoreTab = btn.getAttribute("data-score-tab");
+    renderScoreboard();
   });
 });
 
@@ -773,6 +856,7 @@ startIdleLoop();
 updateDifficultyUI();
 updateFlowerProgress(state.roundCorrect);
 scheduleRainbow();
+renderScoreboard();
 
 if (pauseBtn) {
   pauseBtn.addEventListener("click", () => {
@@ -833,6 +917,7 @@ if (confirmYes) {
       clearTimeout(endDelayTimer);
       endDelayTimer = null;
     }
+    renderScoreboard();
   });
 }
 
@@ -848,5 +933,32 @@ if (confirmNo) {
       }
       resumeTimer();
     }
+  });
+}
+
+if (saveScoreBtn) {
+  saveScoreBtn.addEventListener("click", () => {
+    const name = (state.playerName || "Player").slice(0, 20);
+    if (state.timerEnabled) {
+      const scores = loadScores("mathgame_scores_timer");
+      scores.push({
+        name,
+        level: state.difficulty,
+        rounds: state.roundNumber,
+        bestTimeMs: state.bestRoundTimeMs ?? state.elapsedMs,
+        timestamp: Date.now()
+      });
+      saveScores("mathgame_scores_timer", scores);
+    } else {
+      const scores = loadScores("mathgame_scores_notimer");
+      scores.push({
+        name,
+        level: state.difficulty,
+        maxRound: state.roundNumber,
+        timestamp: Date.now()
+      });
+      saveScores("mathgame_scores_notimer", scores);
+    }
+    renderScoreboard();
   });
 }
