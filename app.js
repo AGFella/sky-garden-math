@@ -527,6 +527,9 @@ function openFullScoreboard() {
           if (confirm("${strings.clear_confirm}")) {
             localStorage.removeItem("mathgame_scores_notimer");
             localStorage.removeItem("mathgame_scores_timer");
+            if (window.opener) {
+              window.opener.postMessage({ type: "scoresCleared" }, "*");
+            }
             location.reload();
           }
         });
@@ -917,6 +920,12 @@ updateDifficultyUI();
 updateFlowerProgress(state.roundCorrect);
 scheduleRainbow();
 renderScoreboard();
+
+window.addEventListener("message", (event) => {
+  if (event && event.data && event.data.type === "scoresCleared") {
+    renderScoreboard();
+  }
+});
 
 if (pauseBtn) {
   pauseBtn.addEventListener("click", () => {
