@@ -873,6 +873,7 @@ body {
 .end-card.full-score {
   width: min(640px, 92vw);
   text-align: left;
+  position: relative;
 }
 
 .full-score-content {
@@ -900,6 +901,30 @@ body {
 
 .full-score-table th {
   background: rgba(245, 245, 245, 0.9);
+}
+
+.close-x {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+#clearScoresBtn {
+  border: 1px dashed #c55;
+  color: #b33;
+  background: #fff5f5;
+}
+
+.full-score .end-actions {
+  justify-content: flex-end;
 }
 .start-section {
   margin: 12px 0;

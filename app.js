@@ -27,6 +27,7 @@ const i18n = {
     no_timer: "Без таймера",
     with_timer: "С таймером",
     full_score: "Полная таблица",
+    hall_of_fame: "Зал славы",
     clear_scores: "Очистить таблицу",
     clear_confirm: "Вы уверены, что хотите удалить все эти прекрасные результаты?",
     pause: "Пауза",
@@ -71,6 +72,7 @@ const i18n = {
     no_timer: "Senza timer",
     with_timer: "Con timer",
     full_score: "Tabella completa",
+    hall_of_fame: "Hall of Fame",
     clear_scores: "Cancella tabella",
     clear_confirm: "Sei sicuro di voler eliminare tutti questi splendidi risultati?",
     pause: "Pausa",
@@ -116,6 +118,7 @@ const i18n = {
     no_timer: "No timer",
     with_timer: "With timer",
     full_score: "Full scoreboard",
+    hall_of_fame: "Hall of Fame",
     clear_scores: "Clear scoreboard",
     clear_confirm: "Are you sure you want to delete all these beautiful results?",
     pause: "Pause",
@@ -206,7 +209,7 @@ const scoreTable = document.getElementById("scoreTable");
 const fullScoreBtn = document.getElementById("fullScoreBtn");
 const fullScoreOverlay = document.getElementById("fullScoreOverlay");
 const fullScoreContent = document.getElementById("fullScoreContent");
-const closeFullScoreBtn = document.getElementById("closeFullScoreBtn");
+const closeFullScoreX = document.getElementById("closeFullScoreX");
 const clearScoresBtn = document.getElementById("clearScoresBtn");
 const clearScoresOverlay = document.getElementById("clearScoresOverlay");
 const clearScoresYes = document.getElementById("clearScoresYes");
@@ -844,6 +847,7 @@ difficultyButtons.forEach((btn) => {
 Array.from(document.querySelectorAll("[data-lang]")).forEach((btn) => {
   btn.addEventListener("click", () => {
     setLanguage(btn.getAttribute("data-lang"));
+    renderScoreboard();
   });
 });
 
@@ -890,8 +894,8 @@ startDifficultyButtons.forEach((btn) => {
 if (fullScoreBtn) {
   fullScoreBtn.addEventListener("click", openFullScoreboard);
 }
-if (closeFullScoreBtn) {
-  closeFullScoreBtn.addEventListener("click", () => {
+if (closeFullScoreX) {
+  closeFullScoreX.addEventListener("click", () => {
     if (fullScoreOverlay) fullScoreOverlay.hidden = true;
   });
 }
@@ -915,8 +919,10 @@ if (clearScoresNo) {
   });
 }
 
+
 endOverlay.hidden = true;
 setLanguage(state.lang);
+renderScoreboard();
 if (startOverlay) startOverlay.hidden = false;
 if (timer) timer.hidden = true;
 if (timerRow) timerRow.hidden = true;
