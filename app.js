@@ -27,6 +27,8 @@ const i18n = {
     no_timer: "Без таймера",
     with_timer: "С таймером",
     full_score: "Полная таблица",
+    clear_scores: "Очистить таблицу",
+    clear_confirm: "Вы уверены, что хотите удалить все эти прекрасные результаты?",
     pause: "Пауза",
     continue: "Продолжить",
     confirm_quit: "Выйти из игры?",
@@ -69,6 +71,8 @@ const i18n = {
     no_timer: "Senza timer",
     with_timer: "Con timer",
     full_score: "Tabella completa",
+    clear_scores: "Cancella tabella",
+    clear_confirm: "Sei sicuro di voler eliminare tutti questi splendidi risultati?",
     pause: "Pausa",
     continue: "Continua",
     confirm_quit: "Uscire dal gioco?",
@@ -112,6 +116,8 @@ const i18n = {
     no_timer: "No timer",
     with_timer: "With timer",
     full_score: "Full scoreboard",
+    clear_scores: "Clear scoreboard",
+    clear_confirm: "Are you sure you want to delete all these beautiful results?",
     pause: "Pause",
     continue: "Continue",
     confirm_quit: "Quit the game?",
@@ -498,6 +504,8 @@ function openFullScoreboard() {
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background: #f5f5f5; }
+    .actions { margin-top: 20px; display: flex; justify-content: flex-end; }
+    .clear { border: 1px dashed #c55; background: #fff5f5; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
   </style></head><body>
     <h2>${strings.no_timer}</h2>
     <table>
@@ -509,6 +517,21 @@ function openFullScoreboard() {
       <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.time_label}</th></tr>
       ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${formatTime(s.bestTimeMs)}</td></tr>`).join("")}
     </table>
+    <div class="actions">
+      <button class="clear" id="clearScores">${strings.clear_scores}</button>
+    </div>
+    <script>
+      const clearBtn = document.getElementById("clearScores");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          if (confirm("${strings.clear_confirm}")) {
+            localStorage.removeItem("mathgame_scores_notimer");
+            localStorage.removeItem("mathgame_scores_timer");
+            location.reload();
+          }
+        });
+      }
+    </script>
   </body></html>`;
   w.document.write(html);
   w.document.close();
