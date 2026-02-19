@@ -204,6 +204,13 @@ const playerNameInput = document.getElementById("playerNameInput");
 const saveScoreBtn = document.getElementById("saveScoreBtn");
 const scoreTable = document.getElementById("scoreTable");
 const fullScoreBtn = document.getElementById("fullScoreBtn");
+const fullScoreOverlay = document.getElementById("fullScoreOverlay");
+const fullScoreContent = document.getElementById("fullScoreContent");
+const closeFullScoreBtn = document.getElementById("closeFullScoreBtn");
+const clearScoresBtn = document.getElementById("clearScoresBtn");
+const clearScoresOverlay = document.getElementById("clearScoresOverlay");
+const clearScoresYes = document.getElementById("clearScoresYes");
+const clearScoresNo = document.getElementById("clearScoresNo");
 const rainbow = document.getElementById("rainbow");
 
 const KITTY_ANIM_MS = 600;
@@ -490,54 +497,28 @@ function renderScoreboard() {
 
 function openFullScoreboard() {
   const strings = i18n[state.lang];
+  if (!fullScoreContent || !fullScoreOverlay) return;
   const notimer = loadScores("mathgame_scores_notimer");
   const timer = loadScores("mathgame_scores_timer");
   notimer.sort((a, b) => b.maxRound - a.maxRound || b.timestamp - a.timestamp);
   timer.sort((a, b) => a.bestTimeMs - b.bestTimeMs || b.rounds - a.rounds);
-  const w = window.open("", "_blank", "width=600,height=700");
-  if (!w) return;
-  const html = `
-  <html><head><title>Scoreboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    h2 { margin-top: 24px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #f5f5f5; }
-    .actions { margin-top: 20px; display: flex; justify-content: flex-end; }
-    .clear { border: 1px dashed #c55; background: #fff5f5; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
-  </style></head><body>
-    <h2>${strings.no_timer}</h2>
-    <table>
-      <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.difficulty}</th></tr>
-      ${notimer.map(s => `<tr><td>${s.name}</td><td>${s.maxRound}</td><td>${s.level}</td></tr>`).join("")}
-    </table>
-    <h2>${strings.with_timer}</h2>
-    <table>
-      <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.time_label}</th></tr>
-      ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${formatTime(s.bestTimeMs)}</td></tr>`).join("")}
-    </table>
-    <div class="actions">
-      <button class="clear" id="clearScores">${strings.clear_scores}</button>
+  fullScoreContent.innerHTML = `
+    <div>
+      <h3>${strings.no_timer}</h3>
+      <table class="full-score-table">
+        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.difficulty}</th></tr>
+        ${notimer.map(s => `<tr><td>${s.name}</td><td>${s.maxRound}</td><td>${s.level}</td></tr>`).join("")}
+      </table>
     </div>
-    <script>
-      const clearBtn = document.getElementById("clearScores");
-      if (clearBtn) {
-        clearBtn.addEventListener("click", () => {
-          if (confirm("${strings.clear_confirm}")) {
-            localStorage.removeItem("mathgame_scores_notimer");
-            localStorage.removeItem("mathgame_scores_timer");
-            if (window.opener) {
-              window.opener.postMessage({ type: "scoresCleared" }, "*");
-            }
-            location.reload();
-          }
-        });
-      }
-    </script>
-  </body></html>`;
-  w.document.write(html);
-  w.document.close();
+    <div>
+      <h3>${strings.with_timer}</h3>
+      <table class="full-score-table">
+        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.time_label}</th></tr>
+        ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${formatTime(s.bestTimeMs)}</td></tr>`).join("")}
+      </table>
+    </div>
+  `;
+  fullScoreOverlay.hidden = false;
 }
 
 function scheduleRainbow() {
@@ -909,6 +890,30 @@ startDifficultyButtons.forEach((btn) => {
 if (fullScoreBtn) {
   fullScoreBtn.addEventListener("click", openFullScoreboard);
 }
+if (closeFullScoreBtn) {
+  closeFullScoreBtn.addEventListener("click", () => {
+    if (fullScoreOverlay) fullScoreOverlay.hidden = true;
+  });
+}
+if (clearScoresBtn) {
+  clearScoresBtn.addEventListener("click", () => {
+    if (clearScoresOverlay) clearScoresOverlay.hidden = false;
+  });
+}
+if (clearScoresYes) {
+  clearScoresYes.addEventListener("click", () => {
+    localStorage.removeItem("mathgame_scores_notimer");
+    localStorage.removeItem("mathgame_scores_timer");
+    if (clearScoresOverlay) clearScoresOverlay.hidden = true;
+    renderScoreboard();
+    openFullScoreboard();
+  });
+}
+if (clearScoresNo) {
+  clearScoresNo.addEventListener("click", () => {
+    if (clearScoresOverlay) clearScoresOverlay.hidden = true;
+  });
+}
 
 endOverlay.hidden = true;
 setLanguage(state.lang);
@@ -921,11 +926,6 @@ updateFlowerProgress(state.roundCorrect);
 scheduleRainbow();
 renderScoreboard();
 
-window.addEventListener("message", (event) => {
-  if (event && event.data && event.data.type === "scoresCleared") {
-    renderScoreboard();
-  }
-});
 
 if (pauseBtn) {
   pauseBtn.addEventListener("click", () => {

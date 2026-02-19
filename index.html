@@ -194,6 +194,28 @@
     </div>
   </div>
 
+  <div class="overlay" id="fullScoreOverlay" hidden>
+    <div class="end-card full-score">
+      <h2 data-i18n="full_score">Полная таблица</h2>
+      <div class="full-score-content" id="fullScoreContent"></div>
+      <div class="end-actions">
+        <button class="btn ghost" id="clearScoresBtn" data-i18n="clear_scores">Очистить таблицу</button>
+        <button class="btn primary" id="closeFullScoreBtn" data-i18n="no">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="clearScoresOverlay" hidden>
+    <div class="end-card">
+      <h2 data-i18n="clear_scores">Очистить таблицу</h2>
+      <p data-i18n="clear_confirm">Вы уверены, что хотите удалить все эти прекрасные результаты?</p>
+      <div class="end-actions">
+        <button class="btn primary" id="clearScoresYes" data-i18n="yes">Да</button>
+        <button class="btn ghost" id="clearScoresNo" data-i18n="no">Нет</button>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

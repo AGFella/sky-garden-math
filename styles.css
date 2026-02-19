@@ -870,6 +870,37 @@ body {
   box-shadow: var(--shadow);
 }
 
+.end-card.full-score {
+  width: min(640px, 92vw);
+  text-align: left;
+}
+
+.full-score-content {
+  display: grid;
+  gap: 16px;
+  margin: 12px 0 18px;
+}
+
+.full-score-content h3 {
+  margin: 8px 0 6px;
+}
+
+.full-score-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.full-score-table th,
+.full-score-table td {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.full-score-table th {
+  background: rgba(245, 245, 245, 0.9);
+}
 .start-section {
   margin: 12px 0;
   display: grid;
