@@ -283,6 +283,12 @@ function makeAddition(range) {
   return { a, b, op: "+", answer: a + b };
 }
 
+function makeAdditionNoZero(min, max) {
+  const a = randomInt(Math.max(1, min), max);
+  const b = randomInt(Math.max(1, min), max);
+  return { a, b, op: "+", answer: a + b };
+}
+
 function makeAdditionCapped(min, max, cap) {
   const a = randomInt(min, max);
   const maxB = Math.min(max, cap - a);
@@ -324,11 +330,10 @@ function generateQuestion(difficulty) {
     return makeDivision([1, 6], [1, 6]);
   }
   if (difficulty === "medium") {
-    if (pick < 0.5) return makeAddition([0, 30]);
-    if (pick < 0.75) return makeSubtraction([0, 30]);
-    return pick < 0.875
-      ? makeMultiplication([1, 9], [1, 9])
-      : makeDivision([2, 9], [1, 9]);
+    if (pick < 0.25) return makeAdditionNoZero(1, 30);
+    if (pick < 0.5) return makeSubtractionNoZero(1, 30);
+    if (pick < 0.75) return makeMultiplication([1, 9], [1, 9]);
+    return makeDivision([2, 9], [1, 9]);
   }
   if (pick < 0.4) return makeAddition([0, 100]);
   if (pick < 0.8) return makeSubtraction([0, 100]);
