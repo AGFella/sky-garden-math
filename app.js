@@ -355,10 +355,24 @@ function generateQuestion(difficulty) {
       ? makeDivision([6, 9], [6, 9])
       : makeDivision([2, 9], [1, 9]);
   }
-  if (pick < 0.25) return makeAdditionNoZero(1, 100);
-  if (pick < 0.5) return makeSubtractionNoZero(1, 100);
-  if (pick < 0.75) return makeMultiplication([1, 100], [1, 100]);
-  return makeDivision([2, 100], [1, 100]);
+  if (pick < 0.15) {
+    return Math.random() < 0.8
+      ? makeAdditionNoZero(40, 100)
+      : makeAdditionNoZero(1, 100);
+  }
+  if (pick < 0.3) {
+    return Math.random() < 0.8
+      ? makeSubtractionNoZero(40, 100)
+      : makeSubtractionNoZero(1, 100);
+  }
+  if (pick < 0.65) {
+    return Math.random() < 0.75
+      ? makeMultiplication([25, 100], [25, 100])
+      : makeMultiplication([1, 100], [1, 100]);
+  }
+  return Math.random() < 0.75
+    ? makeDivision([8, 20], [8, 100])
+    : makeDivision([2, 100], [1, 100]);
 }
 
 function updateProblemText() {
