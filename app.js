@@ -5,7 +5,7 @@ const UNLOCK_TARGET = 10;
 const i18n = {
   ru: {
     title: "Sky Garden Rescue",
-    subtitle: "Помоги садовнику и котику спасти острова",
+    subtitle: "Решай быстро, думай точно и помогай Капитану Котёнку выращивать яркие цветы на летающих островах.",
     difficulty: "Сложность",
     easy: "Легко",
     medium: "Средне",
@@ -51,7 +51,7 @@ const i18n = {
   },
   it: {
     title: "Sky Garden Rescue",
-    subtitle: "Aiuta il giardiniere e il gattino a salvare le isole",
+    subtitle: "Risolvi in fretta, pensa con precisione e aiuta il Capitano Gattino a far crescere fiori luminosi sulle isole volanti.",
     difficulty: "Difficolta",
     easy: "Facile",
     medium: "Medio",
@@ -98,7 +98,7 @@ const i18n = {
   ,
   en: {
     title: "Sky Garden Rescue",
-    subtitle: "Help the gardener and the kitty save the islands",
+    subtitle: "Solve quickly, think clearly, and help Captain Kitten grow bright flowers on the flying islands",
     difficulty: "Difficulty",
     easy: "Easy",
     medium: "Medium",
