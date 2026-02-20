@@ -336,10 +336,24 @@ function generateQuestion(difficulty) {
     return makeDivision([1, 6], [1, 6]);
   }
   if (difficulty === "medium") {
-    if (pick < 0.25) return makeAdditionNoZero(1, 30);
-    if (pick < 0.5) return makeSubtractionNoZero(1, 30);
-    if (pick < 0.75) return makeMultiplication([1, 9], [1, 9]);
-    return makeDivision([2, 9], [1, 9]);
+    if (pick < 0.2) {
+      return Math.random() < 0.8
+        ? makeAdditionNoZero(10, 30)
+        : makeAdditionNoZero(1, 30);
+    }
+    if (pick < 0.4) {
+      return Math.random() < 0.8
+        ? makeSubtractionNoZero(10, 30)
+        : makeSubtractionNoZero(1, 30);
+    }
+    if (pick < 0.7) {
+      return Math.random() < 0.8
+        ? makeMultiplication([6, 9], [6, 9])
+        : makeMultiplication([1, 9], [1, 9]);
+    }
+    return Math.random() < 0.8
+      ? makeDivision([6, 9], [6, 9])
+      : makeDivision([2, 9], [1, 9]);
   }
   if (pick < 0.25) return makeAdditionNoZero(1, 100);
   if (pick < 0.5) return makeSubtractionNoZero(1, 100);
