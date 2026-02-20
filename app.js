@@ -155,6 +155,7 @@ const state = {
   roundActive: false,
   playerName: "",
   bestRoundTimeMs: null,
+  currentPetalColors: [],
   streak: 0,
   consecutiveWrong: 0,
   wrongAttempts: 0,
@@ -403,6 +404,9 @@ function updateStats() {
 
 function updateFlowerProgress(count) {
   if (!flower) return;
+  if (count === 0) {
+    state.currentPetalColors = [];
+  }
   const pieces = [
     ".stem-1",
     ".stem-2",
@@ -421,23 +425,35 @@ function updateFlowerProgress(count) {
     const shouldBeOn = index < count;
     el.classList.toggle("on", shouldBeOn);
     if (shouldBeOn && el.classList.contains("petal") && !el.dataset.colorSet) {
-      el.style.background = randomPetalColor();
+      const color = randomPetalColor(state.currentPetalColors);
+      el.style.background = color;
+      state.currentPetalColors.push(color);
       el.dataset.colorSet = "true";
     }
     if (!shouldBeOn && el.classList.contains("petal")) {
+      if (el.style.background) {
+        state.currentPetalColors = state.currentPetalColors.filter(
+          (c) => c !== el.style.background
+        );
+      }
       el.dataset.colorSet = "";
+      el.style.background = "";
     }
   });
 }
 
-function randomPetalColor() {
+function randomPetalColor(usedColors = []) {
   const hue = Math.floor(Math.random() * 360);
   const saturation = 65 + Math.floor(Math.random() * 20);
   const lightness = 55 + Math.floor(Math.random() * 10);
-  if ((hue >= 85 && hue <= 150)) {
-    return randomPetalColor();
+  const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  if (hue >= 85 && hue <= 150) {
+    return randomPetalColor(usedColors);
   }
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  if (usedColors.includes(color)) {
+    return randomPetalColor(usedColors);
+  }
+  return color;
 }
 
 function setFeedback(text, isCorrect) {
