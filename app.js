@@ -277,6 +277,12 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getDifficultyScoreMultiplier() {
+  if (state.difficulty === "medium") return 1.1;
+  if (state.difficulty === "hard") return 1.2;
+  return 1;
+}
+
 function makeAddition(range) {
   const a = randomInt(range[0], range[1]);
   const b = randomInt(range[0], range[1]);
@@ -335,11 +341,10 @@ function generateQuestion(difficulty) {
     if (pick < 0.75) return makeMultiplication([1, 9], [1, 9]);
     return makeDivision([2, 9], [1, 9]);
   }
-  if (pick < 0.4) return makeAddition([0, 100]);
-  if (pick < 0.8) return makeSubtraction([0, 100]);
-  return pick < 0.9
-    ? makeMultiplication([2, 100], [2, 10])
-    : makeDivision([2, 10], [2, 100]);
+  if (pick < 0.25) return makeAdditionNoZero(1, 100);
+  if (pick < 0.5) return makeSubtractionNoZero(1, 100);
+  if (pick < 0.75) return makeMultiplication([1, 100], [1, 100]);
+  return makeDivision([2, 100], [1, 100]);
 }
 
 function updateProblemText() {
@@ -354,7 +359,9 @@ function updateStats() {
     questionText.textContent = `${state.currentIndex} / ${TOTAL_QUESTIONS}`;
   }
   streakText.textContent = state.streak;
-  scoreText.textContent = state.score;
+  scoreText.textContent = Number.isInteger(state.score)
+    ? String(state.score)
+    : state.score.toFixed(1);
   if (progressSteps) {
     const steps = Array.from(progressSteps.querySelectorAll(".step"));
     steps.forEach((step, index) => {
@@ -769,7 +776,8 @@ answerForm.addEventListener("submit", (event) => {
   const strings = i18n[state.lang];
 
   if (numeric === state.currentQuestion.answer) {
-    state.score += 1;
+    const scoreStep = getDifficultyScoreMultiplier();
+    state.score += scoreStep;
     state.roundCorrect = Math.min(state.roundCorrect + 1, TOTAL_QUESTIONS);
     state.totalCorrect += 1;
     state.streak += 1;
@@ -786,7 +794,7 @@ answerForm.addEventListener("submit", (event) => {
     updateDifficultyUI();
 
     if (state.streak > 0 && state.streak % STREAK_BONUS_AT === 0) {
-      state.score += 1;
+      state.score += scoreStep;
     }
 
     updateStats();
