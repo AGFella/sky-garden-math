@@ -385,6 +385,12 @@ function updateProblemText() {
   problemText.textContent = `${a} ${op} ${b} = ?`;
 }
 
+function clearProblemText() {
+  if (problemText) {
+    problemText.textContent = "";
+  }
+}
+
 function updateStats() {
   progressText.textContent = `${state.roundNumber}`;
   if (questionText) {
@@ -690,6 +696,16 @@ function startGame() {
   if (timer) timer.hidden = !state.timerEnabled;
   if (state.timerEnabled) startTimer();
   nextQuestion();
+}
+
+function showStartScreen() {
+  state.roundActive = false;
+  state.currentQuestion = null;
+  clearProblemText();
+  setHint("");
+  if (startOverlay) startOverlay.hidden = false;
+  if (timerRow) timerRow.hidden = true;
+  if (timer) timer.hidden = true;
 }
 
 function nextRound() {
@@ -1030,9 +1046,7 @@ if (clearScoresNo) {
 endOverlay.hidden = true;
 setLanguage(state.lang);
 renderScoreboard();
-if (startOverlay) startOverlay.hidden = false;
-if (timer) timer.hidden = true;
-if (timerRow) timerRow.hidden = true;
+showStartScreen();
 startIdleLoop();
 updateDifficultyUI();
 updateFlowerProgress(state.roundCorrect);
@@ -1077,10 +1091,8 @@ if (newGameBtn) {
 if (confirmYes) {
   confirmYes.addEventListener("click", () => {
     if (confirmOverlay) confirmOverlay.hidden = true;
-    if (startOverlay) startOverlay.hidden = false;
-    startGame();
+    showStartScreen();
     stopTimer();
-    if (timerRow) timerRow.hidden = true;
     state.timerEnabled = false;
     state.timerPaused = false;
     kitten.classList.remove("sleeping");
