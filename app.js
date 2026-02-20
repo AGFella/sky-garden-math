@@ -28,6 +28,7 @@ const i18n = {
     with_timer: "С таймером",
     full_score: "Полная таблица",
     hall_of_fame: "Зал славы",
+    avg_time: "Среднее",
     clear_scores: "Очистить таблицу",
     clear_confirm: "Вы уверены, что хотите удалить все эти прекрасные результаты?",
     pause: "Пауза",
@@ -73,6 +74,7 @@ const i18n = {
     with_timer: "Con timer",
     full_score: "Tabella completa",
     hall_of_fame: "Hall of Fame",
+    avg_time: "Media",
     clear_scores: "Cancella tabella",
     clear_confirm: "Sei sicuro di voler eliminare tutti questi splendidi risultati?",
     pause: "Pausa",
@@ -119,6 +121,7 @@ const i18n = {
     with_timer: "With timer",
     full_score: "Full scoreboard",
     hall_of_fame: "Hall of Fame",
+    avg_time: "Avg",
     clear_scores: "Clear scoreboard",
     clear_confirm: "Are you sure you want to delete all these beautiful results?",
     pause: "Pause",
@@ -543,6 +546,27 @@ function saveScores(key, list) {
   localStorage.setItem(key, JSON.stringify(list));
 }
 
+function normalizeTimerScore(entry) {
+  return {
+    name: entry.name ?? "Player",
+    level: entry.level ?? "easy",
+    rounds: entry.rounds ?? 0,
+    bestRoundTimeMs: entry.bestRoundTimeMs ?? entry.bestTimeMs ?? Number.POSITIVE_INFINITY,
+    avgRoundTimeMs: entry.avgRoundTimeMs ?? null,
+    score: entry.score ?? 0,
+    timestamp: entry.timestamp ?? 0
+  };
+}
+
+function sortTimerRuns(list) {
+  list.sort((a, b) =>
+    a.bestRoundTimeMs - b.bestRoundTimeMs ||
+    b.rounds - a.rounds ||
+    b.score - a.score ||
+    b.timestamp - a.timestamp
+  );
+}
+
 function renderScoreboard() {
   if (!scoreTable) return;
   const strings = i18n[state.lang];
@@ -556,12 +580,12 @@ function renderScoreboard() {
       ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.maxRound}</div><div>${s.level}</div><div>${s.score ?? 0}</div></div>`)
     ].join("");
   } else {
-    const scores = loadScores("mathgame_scores_timer");
-    scores.sort((a, b) => a.bestTimeMs - b.bestTimeMs || b.rounds - a.rounds);
+    const scores = loadScores("mathgame_scores_timer").map(normalizeTimerScore);
+    sortTimerRuns(scores);
     const rows = scores.slice(0, 3);
     scoreTable.innerHTML = [
       `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.time_label}</div><div>${strings.score}</div></div>`,
-      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.rounds}</div><div>${formatTime(s.bestTimeMs)}</div><div>${s.score ?? 0}</div></div>`)
+      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.rounds}</div><div>${formatTime(s.bestRoundTimeMs)}</div><div>${s.score ?? 0}</div></div>`)
     ].join("");
   }
 }
@@ -570,9 +594,9 @@ function openFullScoreboard() {
   const strings = i18n[state.lang];
   if (!fullScoreContent || !fullScoreOverlay) return;
   const notimer = loadScores("mathgame_scores_notimer");
-  const timer = loadScores("mathgame_scores_timer");
+  const timer = loadScores("mathgame_scores_timer").map(normalizeTimerScore);
   notimer.sort((a, b) => b.maxRound - a.maxRound || b.timestamp - a.timestamp);
-  timer.sort((a, b) => a.bestTimeMs - b.bestTimeMs || b.rounds - a.rounds);
+  sortTimerRuns(timer);
   fullScoreContent.innerHTML = `
     <div>
       <h3>${strings.no_timer}</h3>
@@ -591,13 +615,15 @@ function openFullScoreboard() {
       <h3>${strings.with_timer}</h3>
       <table class="full-score-table">
         <colgroup>
-          <col style="width:38%">
+          <col style="width:27%">
+          <col style="width:12%">
+          <col style="width:15%">
+          <col style="width:18%">
           <col style="width:14%">
-          <col style="width:24%">
-          <col style="width:24%">
+          <col style="width:14%">
         </colgroup>
-        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.time_label}</th><th>${strings.score}</th></tr>
-        ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${formatTime(s.bestTimeMs)}</td><td>${s.score ?? 0}</td></tr>`).join("")}
+        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.difficulty}</th><th>${strings.time_label}</th><th>${strings.avg_time}</th><th>${strings.score}</th></tr>
+        ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${s.level}</td><td>${formatTime(s.bestRoundTimeMs)}</td><td>${s.avgRoundTimeMs != null ? formatTime(s.avgRoundTimeMs) : "-"}</td><td>${s.score ?? 0}</td></tr>`).join("")}
       </table>
     </div>
   `;
@@ -1100,23 +1126,18 @@ if (saveScoreBtn) {
       : Number(state.score.toFixed(1));
     if (state.timerEnabled) {
       const scores = loadScores("mathgame_scores_timer");
-      const existing = scores.find((s) => s.name === name && s.level === state.difficulty);
       const bestTime = state.bestRoundTimeMs ?? state.elapsedMs;
-      if (existing) {
-        existing.rounds = Math.max(existing.rounds, state.roundNumber);
-        existing.bestTimeMs = Math.min(existing.bestTimeMs, bestTime);
-        existing.score = Math.max(existing.score ?? 0, scoreValue);
-        existing.timestamp = Date.now();
-      } else {
-        scores.push({
-          name,
-          level: state.difficulty,
-          rounds: state.roundNumber,
-          bestTimeMs: bestTime,
-          score: scoreValue,
-          timestamp: Date.now()
-        });
-      }
+      const avgTime = state.roundNumber > 0 ? Math.round(state.elapsedMs / state.roundNumber) : null;
+      // Run-based leaderboard entry: keep every saved game run.
+      scores.push({
+        name,
+        level: state.difficulty,
+        rounds: state.roundNumber,
+        bestRoundTimeMs: bestTime,
+        avgRoundTimeMs: avgTime,
+        score: scoreValue,
+        timestamp: Date.now()
+      });
       saveScores("mathgame_scores_timer", scores);
     } else {
       const scores = loadScores("mathgame_scores_notimer");
