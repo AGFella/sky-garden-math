@@ -508,16 +508,16 @@ function renderScoreboard() {
     scores.sort((a, b) => b.maxRound - a.maxRound || b.timestamp - a.timestamp);
     const rows = scores.slice(0, 3);
     scoreTable.innerHTML = [
-      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.difficulty}</div></div>`,
-      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.maxRound}</div><div>${s.level}</div></div>`)
+      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.difficulty}</div><div>${strings.score}</div></div>`,
+      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.maxRound}</div><div>${s.level}</div><div>${s.score ?? 0}</div></div>`)
     ].join("");
   } else {
     const scores = loadScores("mathgame_scores_timer");
     scores.sort((a, b) => a.bestTimeMs - b.bestTimeMs || b.rounds - a.rounds);
     const rows = scores.slice(0, 3);
     scoreTable.innerHTML = [
-      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.time_label}</div></div>`,
-      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.rounds}</div><div>${formatTime(s.bestTimeMs)}</div></div>`)
+      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.time_label}</div><div>${strings.score}</div></div>`,
+      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.rounds}</div><div>${formatTime(s.bestTimeMs)}</div><div>${s.score ?? 0}</div></div>`)
     ].join("");
   }
 }
@@ -533,15 +533,27 @@ function openFullScoreboard() {
     <div>
       <h3>${strings.no_timer}</h3>
       <table class="full-score-table">
-        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.difficulty}</th></tr>
-        ${notimer.map(s => `<tr><td>${s.name}</td><td>${s.maxRound}</td><td>${s.level}</td></tr>`).join("")}
+        <colgroup>
+          <col style="width:38%">
+          <col style="width:14%">
+          <col style="width:24%">
+          <col style="width:24%">
+        </colgroup>
+        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.difficulty}</th><th>${strings.score}</th></tr>
+        ${notimer.map(s => `<tr><td>${s.name}</td><td>${s.maxRound}</td><td>${s.level}</td><td>${s.score ?? 0}</td></tr>`).join("")}
       </table>
     </div>
     <div>
       <h3>${strings.with_timer}</h3>
       <table class="full-score-table">
-        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.time_label}</th></tr>
-        ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${formatTime(s.bestTimeMs)}</td></tr>`).join("")}
+        <colgroup>
+          <col style="width:38%">
+          <col style="width:14%">
+          <col style="width:24%">
+          <col style="width:24%">
+        </colgroup>
+        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.time_label}</th><th>${strings.score}</th></tr>
+        ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${formatTime(s.bestTimeMs)}</td><td>${s.score ?? 0}</td></tr>`).join("")}
       </table>
     </div>
   `;
@@ -1039,6 +1051,9 @@ if (confirmNo) {
 if (saveScoreBtn) {
   saveScoreBtn.addEventListener("click", () => {
     const name = (state.playerName || "Player").slice(0, 20);
+    const scoreValue = Number.isInteger(state.score)
+      ? state.score
+      : Number(state.score.toFixed(1));
     if (state.timerEnabled) {
       const scores = loadScores("mathgame_scores_timer");
       const existing = scores.find((s) => s.name === name && s.level === state.difficulty);
@@ -1046,6 +1061,7 @@ if (saveScoreBtn) {
       if (existing) {
         existing.rounds = Math.max(existing.rounds, state.roundNumber);
         existing.bestTimeMs = Math.min(existing.bestTimeMs, bestTime);
+        existing.score = Math.max(existing.score ?? 0, scoreValue);
         existing.timestamp = Date.now();
       } else {
         scores.push({
@@ -1053,6 +1069,7 @@ if (saveScoreBtn) {
           level: state.difficulty,
           rounds: state.roundNumber,
           bestTimeMs: bestTime,
+          score: scoreValue,
           timestamp: Date.now()
         });
       }
@@ -1062,12 +1079,14 @@ if (saveScoreBtn) {
       const existing = scores.find((s) => s.name === name && s.level === state.difficulty);
       if (existing) {
         existing.maxRound = Math.max(existing.maxRound, state.roundNumber);
+        existing.score = Math.max(existing.score ?? 0, scoreValue);
         existing.timestamp = Date.now();
       } else {
         scores.push({
           name,
           level: state.difficulty,
           maxRound: state.roundNumber,
+          score: scoreValue,
           timestamp: Date.now()
         });
       }
