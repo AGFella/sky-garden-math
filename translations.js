@@ -1,3 +1,5 @@
+import { shopI18n } from "./shop-translations.js";
+
 export const i18n = {
   ru: {
     title: "Sky Garden Rescue",
@@ -151,3 +153,7 @@ export const i18n = {
     end_summary: (score, total) => `Correct answers: ${score} out of ${total}.`,
   }
 };
+
+for (const language of Object.keys(shopI18n)) {
+  Object.assign(i18n[language], shopI18n[language]);
+}

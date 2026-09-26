@@ -14,6 +14,14 @@ import {
   sortTimerRuns,
   upsertNoTimerScore,
 } from "./scoreboard.js";
+import { loadProfile, saveProfile, purchaseItem, equipItem, removeEquippedItem } from "./profile.js";
+import { applyReward, answerReward, roundReward } from "./rewards.js";
+import { evaluateAchievements } from "./achievements.js";
+import { findItem } from "./catalogue.js";
+import { renderKitten } from "./kitten.js";
+import { renderShop } from "./shop.js";
+
+let profile = loadProfile();
 
 const state = {
   lang: "en",
@@ -39,6 +47,8 @@ const state = {
   results: [],
   confirmWasPaused: false,
   islandIndex: 0,
+  sessionId: "",
+  shopWasPaused: false,
 };
 
 const problemText = document.getElementById("problemText");
@@ -59,6 +69,7 @@ const stars = document.getElementById("stars");
 const endTitle = document.getElementById("endTitle");
 const endSummary = document.getElementById("endSummary");
 const endTime = document.getElementById("endTime");
+const coinSummary = document.getElementById("coinSummary");
 const difficultyButtons = Array.from(document.querySelectorAll("[data-difficulty]"));
 const flower = document.getElementById("flower");
 const islands = Array.from(document.querySelectorAll(".island"));
@@ -76,7 +87,7 @@ const confirmYes = document.getElementById("confirmYes");
 const confirmNo = document.getElementById("confirmNo");
 const celebrate = document.getElementById("celebrate");
 const confetti = document.getElementById("confetti");
-const speech = document.getElementById("speech");
+let speech = null;
 const playerNameInput = document.getElementById("playerNameInput");
 const saveScoreBtn = document.getElementById("saveScoreBtn");
 const scoreTable = document.getElementById("scoreTable");
@@ -89,6 +100,20 @@ const clearScoresOverlay = document.getElementById("clearScoresOverlay");
 const clearScoresYes = document.getElementById("clearScoresYes");
 const clearScoresNo = document.getElementById("clearScoresNo");
 const rainbow = document.getElementById("rainbow");
+const coinText = document.getElementById("coinText");
+const shopBtn = document.getElementById("shopBtn");
+const shopOverlay = document.getElementById("shopOverlay");
+const closeShopBtn = document.getElementById("closeShopBtn");
+const shopContent = document.getElementById("shopContent");
+const shopKittenPreview = document.getElementById("shopKittenPreview");
+const shopCoinText = document.getElementById("shopCoinText");
+const purchaseOverlay = document.getElementById("purchaseOverlay");
+const purchaseText = document.getElementById("purchaseText");
+const purchaseYes = document.getElementById("purchaseYes");
+const purchaseNo = document.getElementById("purchaseNo");
+const rewardPop = document.getElementById("rewardPop");
+const achievementToast = document.getElementById("achievementToast");
+const rewardLive = document.getElementById("rewardLive");
 
 const KITTY_ANIM_MS = 600;
 const IDLE_INTERVAL_MS = 5000;
@@ -98,6 +123,63 @@ let feedbackTimer = null;
 let endDelayTimer = null;
 let rainbowTimer = null;
 const dialogTriggers = new Map();
+let activeShopCategory = "hat";
+let pendingPurchaseId = null;
+const achievementQueue = [];
+
+function refreshProfileUI(save = true) {
+  if (save) profile = saveProfile(profile);
+  document.documentElement.dataset.theme = profile.activeTheme;
+  if (coinText) coinText.textContent = profile.coins;
+  if (shopCoinText) shopCoinText.textContent = profile.coins;
+  renderKitten(kitten, profile, i18n[state.lang].kitten_label);
+  speech = kitten.querySelector("[data-kitten-speech]");
+  if (shopOverlay && !shopOverlay.hidden) {
+    renderShop({ container: shopContent, preview: shopKittenPreview, profile, strings: i18n[state.lang], activeCategory: activeShopCategory });
+  }
+}
+
+function showReward(amount, extraMessage = "") {
+  if (!amount) return;
+  const strings = i18n[state.lang];
+  const message = `${strings.coin_earned(amount)}${extraMessage ? ` — ${extraMessage}` : ""}`;
+  rewardPop.textContent = `● +${amount}`;
+  rewardPop.classList.remove("show");
+  requestAnimationFrame(() => rewardPop.classList.add("show"));
+  rewardLive.textContent = message;
+  setTimeout(() => rewardPop.classList.remove("show"), 1300);
+}
+
+function unlockAchievements() {
+  const result = evaluateAchievements(profile);
+  profile = result.profile;
+  if (result.unlocked.length) {
+    achievementQueue.push(...result.unlocked);
+    showNextAchievement();
+  }
+  refreshProfileUI();
+}
+
+function showNextAchievement() {
+  if (!achievementQueue.length || achievementToast.classList.contains("show")) return;
+  const id = achievementQueue.shift();
+  const key = `achievement_${id.replaceAll("-", "_")}`;
+  achievementToast.textContent = `${i18n[state.lang].achievement_unlocked} ${i18n[state.lang][key]}`;
+  achievementToast.classList.add("show");
+  rewardLive.textContent = achievementToast.textContent;
+  setTimeout(() => {
+    achievementToast.classList.remove("show");
+    setTimeout(showNextAchievement, 250);
+  }, 3250);
+}
+
+function award(eventId, amount, extraMessage = "") {
+  const result = applyReward(profile, eventId, amount);
+  profile = result.profile;
+  if (result.awarded) showReward(result.awarded, extraMessage);
+  refreshProfileUI();
+  return result.awarded;
+}
 
 function setAnswerEnabled(enabled) {
   if (answerInput) answerInput.disabled = !enabled;
@@ -170,11 +252,13 @@ function setLanguage(lang) {
   });
   answerInput?.setAttribute("aria-label", strings.answer_label);
   closeFullScoreX?.setAttribute("aria-label", strings.close_dialog);
+  closeShopBtn?.setAttribute("aria-label", strings.close_dialog);
   if (pauseBtn) {
     pauseBtn.textContent = state.timerPaused ? strings.continue : strings.pause;
     pauseBtn.setAttribute("aria-pressed", String(state.timerPaused));
   }
   updateProblemText();
+  refreshProfileUI(false);
 }
 
 function updateProblemText() {
@@ -459,6 +543,7 @@ function nextQuestion() {
 }
 
 function startGame() {
+  state.sessionId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   state.currentIndex = 0;
   state.roundCorrect = 0;
   state.totalCorrect = 0;
@@ -618,6 +703,18 @@ function endGame() {
   stars.innerHTML = starHtml;
 
   const strings = i18n[state.lang];
+  const earned = award(`${state.sessionId}:round:${state.roundNumber}`, roundReward(state.roundCorrect, TOTAL_QUESTIONS), state.roundCorrect === TOTAL_QUESTIONS ? strings.perfect_coin_bonus : "");
+  if (earned) {
+    profile.statistics.completedRounds += 1;
+    if (state.roundCorrect === TOTAL_QUESTIONS) {
+      profile.statistics.perfectRounds += 1;
+      profile.statistics.flowersGrown += 1;
+    }
+    if (state.timerEnabled) profile.statistics.completedTimedRounds += 1;
+    if (!profile.statistics.completedDifficulties.includes(state.difficulty)) profile.statistics.completedDifficulties.push(state.difficulty);
+  }
+  coinSummary.textContent = strings.round_coin_bonus(earned);
+  unlockAchievements();
   endTitle.textContent = strings.end_title;
   endSummary.textContent = strings.end_summary(state.roundCorrect, TOTAL_QUESTIONS);
   if (state.timerEnabled && endTime) {
@@ -656,6 +753,10 @@ answerForm.addEventListener("submit", (event) => {
     state.roundCorrect = Math.min(state.roundCorrect + 1, TOTAL_QUESTIONS);
     state.totalCorrect += 1;
     state.streak += 1;
+    profile.statistics.correctAnswers += 1;
+    profile.statistics.bestStreak = Math.max(profile.statistics.bestStreak, state.streak);
+    award(`${state.sessionId}:answer:${state.roundNumber}:${state.currentIndex}`, answerReward(state.streak), state.streak % 3 === 0 ? strings.streak_coin_bonus : "");
+    unlockAchievements();
     state.score += getAnswerScore(state.difficulty, state.streak);
     state.consecutiveWrong = 0;
     state.currentIndex += 1;
@@ -679,6 +780,8 @@ answerForm.addEventListener("submit", (event) => {
   } else {
     state.wrongAttempts += 1;
     setFeedback(strings.wrong, false);
+    answerInput.value = "";
+    answerInput.focus();
     if (state.wrongAttempts === 1) {
       state.streak = 0;
       setKittenMood("neutral");
@@ -818,8 +921,80 @@ if (clearScoresNo) {
   });
 }
 
+function openShop() {
+  state.shopWasPaused = state.timerPaused;
+  if (state.roundActive && state.timerEnabled && !state.timerPaused) pauseBtn?.click();
+  renderShop({ container: shopContent, preview: shopKittenPreview, profile, strings: i18n[state.lang], activeCategory: activeShopCategory });
+  openDialog(shopOverlay, closeShopBtn);
+}
+
+function closeShop() {
+  closeDialog(shopOverlay);
+  if (state.roundActive && state.timerEnabled && state.timerPaused && !state.shopWasPaused) pauseBtn?.click();
+}
+
+shopBtn?.addEventListener("click", openShop);
+closeShopBtn?.addEventListener("click", closeShop);
+shopContent?.addEventListener("click", (event) => {
+  const control = event.target.closest("button[data-action]");
+  const card = event.target.closest(".shop-item[data-item-id]");
+  const selectedItem = card ? findItem(card.dataset.itemId) : null;
+  if (selectedItem) {
+    shopContent.querySelectorAll(".shop-item").forEach((entry) => entry.classList.toggle("selected", entry === card));
+    if (selectedItem.category !== "theme") {
+      const previewProfile = {
+        ...profile,
+        equippedItems: { ...profile.equippedItems, [selectedItem.category]: selectedItem.id },
+      };
+      renderKitten(shopKittenPreview, previewProfile, i18n[state.lang][selectedItem.translationKey]);
+    }
+  }
+  if (!control) return;
+  if (control.disabled) return;
+  if (control.dataset.action === "category") {
+    activeShopCategory = control.dataset.category;
+  } else if (control.dataset.action === "buy") {
+    pendingPurchaseId = control.dataset.itemId;
+    const item = findItem(pendingPurchaseId);
+    purchaseText.textContent = i18n[state.lang].purchase_confirm(i18n[state.lang][item.translationKey], item.price);
+    openDialog(purchaseOverlay, purchaseNo);
+    return;
+  } else if (control.dataset.action === "equip") {
+    profile = equipItem(profile, control.dataset.itemId);
+    refreshProfileUI();
+  } else if (control.dataset.action === "remove") {
+    const item = findItem(control.dataset.itemId);
+    profile = removeEquippedItem(profile, item.category);
+    refreshProfileUI();
+  }
+  renderShop({ container: shopContent, preview: shopKittenPreview, profile, strings: i18n[state.lang], activeCategory: activeShopCategory });
+});
+shopContent?.addEventListener("keydown", (event) => {
+  if ((event.key === "Enter" || event.key === " ") && event.target.matches(".shop-item")) {
+    event.preventDefault();
+    event.target.click();
+  }
+});
+
+purchaseYes?.addEventListener("click", () => {
+  const item = findItem(pendingPurchaseId);
+  const result = purchaseItem(profile, pendingPurchaseId);
+  profile = result.profile;
+  closeDialog(purchaseOverlay, false);
+  if (result.ok) {
+    rewardLive.textContent = i18n[state.lang].purchase_success(i18n[state.lang][item.translationKey]);
+    refreshProfileUI();
+  }
+  pendingPurchaseId = null;
+});
+purchaseNo?.addEventListener("click", () => {
+  pendingPurchaseId = null;
+  closeDialog(purchaseOverlay);
+});
+
 
 endOverlay.hidden = true;
+refreshProfileUI(false);
 setLanguage(state.lang);
 renderScoreboard();
 showStartScreen();
@@ -918,7 +1093,12 @@ if (confirmNo) {
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
-  if (clearScoresOverlay && !clearScoresOverlay.hidden) {
+  if (purchaseOverlay && !purchaseOverlay.hidden) {
+    pendingPurchaseId = null;
+    closeDialog(purchaseOverlay);
+  } else if (shopOverlay && !shopOverlay.hidden) {
+    closeShop();
+  } else if (clearScoresOverlay && !clearScoresOverlay.hidden) {
     closeDialog(clearScoresOverlay);
   } else if (fullScoreOverlay && !fullScoreOverlay.hidden) {
     closeDialog(fullScoreOverlay);

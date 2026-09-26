@@ -58,28 +58,7 @@
       </div>
 
       <div class="answer-row">
-        <div class="kitten" id="kitten" aria-hidden="true">
-          <div class="kitten-head">
-            <div class="ear ear-left"></div>
-            <div class="ear ear-right"></div>
-            <div class="face">
-              <div class="eye eye-left"></div>
-              <div class="eye eye-right"></div>
-              <div class="nose"></div>
-              <div class="mouth"></div>
-            </div>
-          </div>
-          <div class="kitten-body">
-            <div class="leg leg-left"></div>
-            <div class="leg leg-right"></div>
-          </div>
-          <div class="tear tear-left"></div>
-          <div class="tear tear-right"></div>
-          <div class="zzz z1">Z</div>
-          <div class="zzz z2">Z</div>
-          <div class="zzz z3">Z</div>
-          <div class="speech" id="speech"></div>
-        </div>
+        <div class="kitten" id="kitten"></div>
         <form id="answerForm" class="answer">
           <label class="sr-only" for="answerInput" data-i18n="answer_label">Enter your answer</label>
           <input id="answerInput" type="number" inputmode="numeric" autocomplete="off" />
@@ -137,6 +116,11 @@
           <span class="stat-label" data-i18n="score">Очки</span>
           <span class="stat-value" id="scoreText">0</span>
         </div>
+        <div class="stat coin-stat">
+          <span class="stat-label" data-i18n="coins">Sky Coins</span>
+          <span class="stat-value coin-value"><span aria-hidden="true">●</span> <span id="coinText">0</span></span>
+        </div>
+        <button class="btn primary shop-open" id="shopBtn" data-i18n="shop">Shop</button>
       </div>
 
       <div class="panel-section scoreboard">
@@ -152,6 +136,7 @@
       <h2 id="endTitle"></h2>
       <p id="endSummary"></p>
       <p id="endTime"></p>
+      <p class="coin-summary" id="coinSummary"></p>
       <div class="end-actions">
         <button class="btn primary" id="nextRoundBtn" data-i18n="next_round">Следующий раунд</button>
         <button class="btn ghost" id="saveScoreBtn" data-i18n="save_score">Сохранить результат</button>
@@ -215,6 +200,35 @@
       </div>
     </div>
   </div>
+
+  <div class="overlay" id="shopOverlay" role="dialog" aria-modal="true" aria-labelledby="shopTitle" hidden>
+    <div class="end-card shop-card">
+      <button class="close-x" id="closeShopBtn" data-i18n-aria="close_dialog">×</button>
+      <div class="shop-heading-row">
+        <h2 id="shopTitle" data-i18n="shop_title">Captain Kitten's Shop</h2>
+        <div class="shop-balance"><span aria-hidden="true">●</span> <span id="shopCoinText">0</span></div>
+      </div>
+      <div class="shop-layout">
+        <div class="shop-preview" id="shopKittenPreview"></div>
+        <div class="shop-content" id="shopContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="purchaseOverlay" role="dialog" aria-modal="true" aria-labelledby="purchaseTitle" hidden>
+    <div class="end-card">
+      <h2 id="purchaseTitle" data-i18n="purchase_title">Buy this treasure?</h2>
+      <p id="purchaseText"></p>
+      <div class="end-actions">
+        <button class="btn primary" id="purchaseYes" data-i18n="yes_buy">Yes, buy it</button>
+        <button class="btn ghost" id="purchaseNo" data-i18n="no">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="reward-pop" id="rewardPop" aria-hidden="true"></div>
+  <div class="achievement-toast" id="achievementToast" aria-hidden="true"></div>
+  <div class="sr-only" id="rewardLive" aria-live="polite"></div>
 
   <script type="module" src="app.js"></script>
 </body>
