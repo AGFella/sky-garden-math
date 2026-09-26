@@ -26,9 +26,9 @@
       <span class="title-sub" data-i18n="subtitle">Solve quickly, think clearly, and help Captain Kitten grow bright flowers on the flying islands</span>
     </div>
   <div class="lang-toggle">
-    <button class="chip" data-lang="ru">RU</button>
-    <button class="chip" data-lang="it">IT</button>
-    <button class="chip" data-lang="en">EN</button>
+    <button class="chip" data-lang="ru" aria-pressed="false">RU</button>
+    <button class="chip" data-lang="it" aria-pressed="false">IT</button>
+    <button class="chip" data-lang="en" aria-pressed="true">EN</button>
   </div>
   </header>
 
@@ -42,13 +42,13 @@
       </div>
       <div class="difficulty">
         <div class="difficulty-buttons">
-          <button class="btn" data-difficulty="easy" data-i18n="easy">Легко</button>
-          <button class="btn" data-difficulty="medium" data-i18n="medium">Средне</button>
-          <button class="btn" data-difficulty="hard" data-i18n="hard">Сложно</button>
+          <button class="btn" data-difficulty="easy" data-i18n="easy" aria-pressed="true">Легко</button>
+          <button class="btn" data-difficulty="medium" data-i18n="medium" aria-pressed="false">Средне</button>
+          <button class="btn" data-difficulty="hard" data-i18n="hard" aria-pressed="false">Сложно</button>
         </div>
         <div class="timer-row" id="timerRow" hidden>
           <button class="btn ghost small" id="newGameBtn" data-i18n="new_game">Новая игра</button>
-          <button class="btn ghost small" id="pauseBtn" data-i18n="pause">Пауза</button>
+          <button class="btn ghost small" id="pauseBtn" data-i18n="pause" aria-pressed="false">Пауза</button>
           <div class="timer" id="timer">00:00</div>
         </div>
       </div>
@@ -81,6 +81,7 @@
           <div class="speech" id="speech"></div>
         </div>
         <form id="answerForm" class="answer">
+          <label class="sr-only" for="answerInput" data-i18n="answer_label">Enter your answer</label>
           <input id="answerInput" type="number" inputmode="numeric" autocomplete="off" />
           <button class="btn primary" type="submit" data-i18n="submit">Ответить</button>
         </form>
@@ -102,7 +103,6 @@
       <div class="hint" id="hint" aria-live="polite"></div>
       <div class="celebrate" id="celebrate" aria-live="polite"></div>
 
-      <div class="controls"></div>
     </section>
 
     <aside class="panel">
@@ -146,7 +146,7 @@
     </aside>
   </main>
 
-  <div class="overlay" id="endOverlay" hidden>
+  <div class="overlay" id="endOverlay" role="dialog" aria-modal="true" aria-labelledby="endTitle" hidden>
     <div class="end-card">
       <div class="stars" id="stars"></div>
       <h2 id="endTitle"></h2>
@@ -160,9 +160,9 @@
     </div>
   </div>
 
-  <div class="overlay" id="startOverlay">
+  <div class="overlay" id="startOverlay" role="dialog" aria-modal="true" aria-labelledby="startTitle">
     <div class="end-card">
-      <h2 data-i18n="new_game">Новая игра</h2>
+      <h2 id="startTitle" data-i18n="new_game">Новая игра</h2>
       <div class="start-section">
         <div class="start-label" data-i18n="player_name">Имя игрока</div>
         <input class="name-input" id="playerNameInput" type="text" maxlength="20" />
@@ -170,9 +170,9 @@
       <div class="start-section">
         <div class="start-label" data-i18n="difficulty">Сложность</div>
         <div class="difficulty-buttons">
-          <button class="btn active" data-start-difficulty="easy" data-i18n="easy">Легко</button>
-          <button class="btn" data-start-difficulty="medium" data-i18n="medium">Средне</button>
-          <button class="btn" data-start-difficulty="hard" data-i18n="hard">Сложно</button>
+          <button class="btn active" data-start-difficulty="easy" data-i18n="easy" aria-pressed="true">Легко</button>
+          <button class="btn" data-start-difficulty="medium" data-i18n="medium" aria-pressed="false">Средне</button>
+          <button class="btn" data-start-difficulty="hard" data-i18n="hard" aria-pressed="false">Сложно</button>
         </div>
       </div>
       <label class="start-toggle">
@@ -183,9 +183,9 @@
     </div>
   </div>
 
-  <div class="overlay" id="confirmOverlay" hidden>
+  <div class="overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
     <div class="end-card">
-      <h2 data-i18n="confirm_quit">Выйти из игры?</h2>
+      <h2 id="confirmTitle" data-i18n="confirm_quit">Выйти из игры?</h2>
       <p data-i18n="confirm_text">Текущий прогресс будет потерян.</p>
       <div class="end-actions">
         <button class="btn primary" id="confirmYes" data-i18n="yes">Да</button>
@@ -194,10 +194,10 @@
     </div>
   </div>
 
-  <div class="overlay" id="fullScoreOverlay" hidden>
+  <div class="overlay" id="fullScoreOverlay" role="dialog" aria-modal="true" aria-labelledby="hallTitle" hidden>
     <div class="end-card full-score">
       <button class="close-x" id="closeFullScoreX" aria-label="Close">×</button>
-      <h2 data-i18n="hall_of_fame">Hall of Fame</h2>
+      <h2 id="hallTitle" data-i18n="hall_of_fame">Hall of Fame</h2>
       <div class="full-score-content" id="fullScoreContent"></div>
       <div class="end-actions">
         <button class="btn ghost" id="clearScoresBtn" data-i18n="clear_scores">Очистить таблицу</button>
@@ -205,9 +205,9 @@
     </div>
   </div>
 
-  <div class="overlay" id="clearScoresOverlay" hidden>
+  <div class="overlay" id="clearScoresOverlay" role="dialog" aria-modal="true" aria-labelledby="clearTitle" hidden>
     <div class="end-card">
-      <h2 data-i18n="clear_scores">Очистить таблицу</h2>
+      <h2 id="clearTitle" data-i18n="clear_scores">Очистить таблицу</h2>
       <p data-i18n="clear_confirm">Вы уверены, что хотите удалить все эти прекрасные результаты?</p>
       <div class="end-actions">
         <button class="btn primary" id="clearScoresYes" data-i18n="yes">Да</button>
@@ -216,6 +216,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
