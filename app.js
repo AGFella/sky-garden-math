@@ -1,148 +1,19 @@
-const TOTAL_QUESTIONS = 10;
-const STREAK_BONUS_AT = 3;
-const UNLOCK_TARGET = 10;
-
-const i18n = {
-  ru: {
-    title: "Sky Garden Rescue",
-    subtitle: "Решай быстро, думай точно и помогай Капитану Котёнку выращивать яркие цветы на летающих островах.",
-    difficulty: "Сложность",
-    easy: "Легко",
-    medium: "Средне",
-    hard: "Сложно",
-    submit: "Ответить",
-    restart: "Начать заново",
-    progress: "Прогресс",
-    round: "Раунд",
-    streak: "Серия",
-    score: "Очки",
-    story: "Каждое правильное решение оживляет семена и возвращает цвет на острова.",
-    play_again: "Играть снова",
-    next_round: "Следующий раунд",
-    new_game: "Новая игра",
-    start_game: "Начать игру",
-    timer_label: "Таймер",
-    player_name: "Имя игрока",
-    save_score: "Сохранить результат",
-    no_timer: "Без таймера",
-    with_timer: "С таймером",
-    full_score: "Полная таблица",
-    hall_of_fame: "Зал славы",
-    avg_time: "Среднее",
-    clear_scores: "Очистить таблицу",
-    clear_confirm: "Вы уверены, что хотите удалить все эти прекрасные результаты?",
-    pause: "Пауза",
-    continue: "Продолжить",
-    confirm_quit: "Выйти из игры?",
-    confirm_text: "Текущий прогресс будет потерян.",
-    yes: "Да",
-    no: "Нет",
-    time_label: "Время",
-    encourage_1: "Ты молодец!",
-    encourage_2: "Супер!",
-    encourage_3: "Так держать!",
-    encourage_4: "Отличная работа!",
-    correct: "Отлично!",
-    wrong: "Почти! Попробуй еще раз.",
-    hint_mul: (a, b) => `Подсказка: ${a} + ${a} + ... (всего ${b} раз)` ,
-    hint_div: (a, b) => `Подсказка: какое число умножить на ${b}, чтобы получить ${a}?`,
-    end_title: "Миссия завершена!",
-    end_summary: (score, total) => `Правильных ответов: ${score} из ${total}.`,
-  },
-  it: {
-    title: "Sky Garden Rescue",
-    subtitle: "Risolvi in fretta, pensa con precisione e aiuta il Capitano Gattino a far crescere fiori luminosi sulle isole volanti.",
-    difficulty: "Difficolta",
-    easy: "Facile",
-    medium: "Medio",
-    hard: "Difficile",
-    submit: "Rispondi",
-    restart: "Ricomincia",
-    progress: "Progresso",
-    round: "Round",
-    streak: "Serie",
-    score: "Punti",
-    story: "Ogni risposta giusta fa crescere i semi e riporta colore alle isole.",
-    play_again: "Gioca ancora",
-    next_round: "Prossimo round",
-    new_game: "Nuova partita",
-    start_game: "Avvia",
-    timer_label: "Timer",
-    player_name: "Nome giocatore",
-    save_score: "Salva risultato",
-    no_timer: "Senza timer",
-    with_timer: "Con timer",
-    full_score: "Tabella completa",
-    hall_of_fame: "Hall of Fame",
-    avg_time: "Media",
-    clear_scores: "Cancella tabella",
-    clear_confirm: "Sei sicuro di voler eliminare tutti questi splendidi risultati?",
-    pause: "Pausa",
-    continue: "Continua",
-    confirm_quit: "Uscire dal gioco?",
-    confirm_text: "I progressi andranno persi.",
-    yes: "Si",
-    no: "No",
-    time_label: "Tempo",
-    encourage_1: "Bravo!",
-    encourage_2: "Ottimo!",
-    encourage_3: "Continua cosi!",
-    encourage_4: "Grandioso!",
-    correct: "Ben fatto!",
-    wrong: "Quasi! Riprova.",
-    hint_mul: (a, b) => `Suggerimento: ${a} + ${a} + ... (${b} volte)`,
-    hint_div: (a, b) => `Suggerimento: che numero per ${b} fa ${a}?`,
-    end_title: "Missione completata!",
-    end_summary: (score, total) => `Risposte corrette: ${score} su ${total}.`,
-  }
-  ,
-  en: {
-    title: "Sky Garden Rescue",
-    subtitle: "Solve quickly, think clearly, and help Captain Kitten grow bright flowers on the flying islands",
-    difficulty: "Difficulty",
-    easy: "Easy",
-    medium: "Medium",
-    hard: "Hard",
-    submit: "Submit",
-    restart: "Restart",
-    progress: "Progress",
-    round: "Round",
-    streak: "Streak",
-    score: "Score",
-    story: "Each correct answer makes seeds grow and brings color back to the islands.",
-    play_again: "Play again",
-    next_round: "Next round",
-    new_game: "New game",
-    start_game: "Start game",
-    timer_label: "Timer",
-    player_name: "Player name",
-    save_score: "Save score",
-    no_timer: "No timer",
-    with_timer: "With timer",
-    full_score: "Full scoreboard",
-    hall_of_fame: "Hall of Fame",
-    avg_time: "Avg",
-    clear_scores: "Clear scoreboard",
-    clear_confirm: "Are you sure you want to delete all these beautiful results?",
-    pause: "Pause",
-    continue: "Continue",
-    confirm_quit: "Quit the game?",
-    confirm_text: "Current progress will be lost.",
-    yes: "Yes",
-    no: "No",
-    time_label: "Time",
-    encourage_1: "Awesome!",
-    encourage_2: "Well done!",
-    encourage_3: "Keep it up!",
-    encourage_4: "Great work!",
-    correct: "Great!",
-    wrong: "Almost! Try again.",
-    hint_mul: (a, b) => `Hint: ${a} + ${a} + ... (${b} times)`,
-    hint_div: (a, b) => `Hint: what number times ${b} makes ${a}?`,
-    end_title: "Mission complete!",
-    end_summary: (score, total) => `Correct answers: ${score} out of ${total}.`,
-  }
-};
+import { i18n } from "./translations.js";
+import {
+  TOTAL_QUESTIONS,
+  generateRoundPlan,
+  getAnswerScore,
+} from "./questions.js";
+import { RoundTimer, calculateTimerStats } from "./timer.js";
+import {
+  limitNoTimerScores,
+  limitTimerScores,
+  normalizeNoTimerScore,
+  normalizeTimerScore,
+  sortNoTimerScores,
+  sortTimerRuns,
+  upsertNoTimerScore,
+} from "./scoreboard.js";
 
 const state = {
   lang: "en",
@@ -163,17 +34,17 @@ const state = {
   consecutiveWrong: 0,
   wrongAttempts: 0,
   currentQuestion: null,
+  roundQuestions: [],
+  roundTimes: [],
   results: [],
-  unlocked: {
-    medium: false,
-    hard: false,
-  },
+  confirmWasPaused: false,
   islandIndex: 0,
 };
 
 const problemText = document.getElementById("problemText");
 const answerForm = document.getElementById("answerForm");
 const answerInput = document.getElementById("answerInput");
+const submitBtn = answerForm?.querySelector("button[type='submit']");
 const feedback = document.getElementById("feedback");
 const hint = document.getElementById("hint");
 const progressSteps = document.getElementById("progressSteps");
@@ -181,7 +52,6 @@ const progressText = document.getElementById("progressText");
 const questionText = document.getElementById("questionText");
 const streakText = document.getElementById("streakText");
 const scoreText = document.getElementById("scoreText");
-const seed = document.getElementById("seed");
 const kitten = document.getElementById("kitten");
 const timer = document.getElementById("timer");
 const endOverlay = document.getElementById("endOverlay");
@@ -225,9 +95,29 @@ const IDLE_INTERVAL_MS = 5000;
 const CORRECT_FEEDBACK_MS = 5000;
 let idleTimer = null;
 let feedbackTimer = null;
-let roundTimer = null;
 let endDelayTimer = null;
 let rainbowTimer = null;
+const dialogTriggers = new Map();
+
+function setAnswerEnabled(enabled) {
+  if (answerInput) answerInput.disabled = !enabled;
+  if (submitBtn) submitBtn.disabled = !enabled;
+}
+
+function openDialog(overlay, initialFocus) {
+  if (!overlay) return;
+  if (overlay.hidden) dialogTriggers.set(overlay, document.activeElement);
+  overlay.hidden = false;
+  requestAnimationFrame(() => (initialFocus ?? overlay.querySelector("button, input"))?.focus());
+}
+
+function closeDialog(overlay, restoreFocus = true) {
+  if (!overlay) return;
+  const trigger = dialogTriggers.get(overlay);
+  overlay.hidden = true;
+  if (restoreFocus && trigger instanceof HTMLElement) trigger.focus();
+  dialogTriggers.delete(overlay);
+}
 
 function clearKittenAnimations() {
   kitten.classList.remove("idle", "happy", "shake", "cry");
@@ -268,115 +158,23 @@ function startIdleLoop() {
 function setLanguage(lang) {
   state.lang = lang;
   const strings = i18n[lang];
+  document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
     if (strings[key]) {
       el.textContent = strings[key];
     }
   });
+  document.querySelectorAll("[data-lang]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.getAttribute("data-lang") === lang));
+  });
+  answerInput?.setAttribute("aria-label", strings.answer_label);
+  closeFullScoreX?.setAttribute("aria-label", strings.close_dialog);
+  if (pauseBtn) {
+    pauseBtn.textContent = state.timerPaused ? strings.continue : strings.pause;
+    pauseBtn.setAttribute("aria-pressed", String(state.timerPaused));
+  }
   updateProblemText();
-}
-
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getDifficultyScoreMultiplier() {
-  if (state.difficulty === "medium") return 1.1;
-  if (state.difficulty === "hard") return 1.2;
-  return 1;
-}
-
-function makeAddition(range) {
-  const a = randomInt(range[0], range[1]);
-  const b = randomInt(range[0], range[1]);
-  return { a, b, op: "+", answer: a + b };
-}
-
-function makeAdditionNoZero(min, max) {
-  const a = randomInt(Math.max(1, min), max);
-  const b = randomInt(Math.max(1, min), max);
-  return { a, b, op: "+", answer: a + b };
-}
-
-function makeAdditionCapped(min, max, cap) {
-  const a = randomInt(min, max);
-  const maxB = Math.min(max, cap - a);
-  const b = randomInt(min, maxB);
-  return { a, b, op: "+", answer: a + b };
-}
-
-function makeSubtraction(range) {
-  const a = randomInt(range[0], range[1]);
-  const b = randomInt(range[0], Math.min(a, range[1]));
-  return { a, b, op: "−", answer: a - b };
-}
-
-function makeSubtractionNoZero(min, max) {
-  const a = randomInt(Math.max(2, min), max);
-  const b = randomInt(min, a - 1);
-  return { a, b, op: "−", answer: a - b };
-}
-
-function makeMultiplication(rangeA, rangeB) {
-  const a = randomInt(rangeA[0], rangeA[1]);
-  const b = randomInt(rangeB[0], rangeB[1]);
-  return { a, b, op: "×", answer: a * b };
-}
-
-function makeDivision(rangeDivisor, rangeQuotient) {
-  const divisor = randomInt(rangeDivisor[0], rangeDivisor[1]);
-  const quotient = randomInt(rangeQuotient[0], rangeQuotient[1]);
-  const dividend = divisor * quotient;
-  return { a: dividend, b: divisor, op: "÷", answer: quotient };
-}
-
-function generateQuestion(difficulty) {
-  const pick = Math.random();
-  if (difficulty === "easy") {
-    if (pick < 0.25) return makeAdditionCapped(1, 19, 20);
-    if (pick < 0.5) return makeSubtractionNoZero(1, 19);
-    if (pick < 0.75) return makeMultiplication([1, 6], [1, 6]);
-    return makeDivision([1, 6], [1, 6]);
-  }
-  if (difficulty === "medium") {
-    if (pick < 0.2) {
-      return Math.random() < 0.8
-        ? makeAdditionNoZero(10, 30)
-        : makeAdditionNoZero(1, 30);
-    }
-    if (pick < 0.4) {
-      return Math.random() < 0.8
-        ? makeSubtractionNoZero(10, 30)
-        : makeSubtractionNoZero(1, 30);
-    }
-    if (pick < 0.7) {
-      return Math.random() < 0.8
-        ? makeMultiplication([6, 9], [6, 9])
-        : makeMultiplication([1, 9], [1, 9]);
-    }
-    return Math.random() < 0.8
-      ? makeDivision([6, 9], [6, 9])
-      : makeDivision([2, 9], [1, 9]);
-  }
-  if (pick < 0.15) {
-    return Math.random() < 0.8
-      ? makeAdditionNoZero(40, 100)
-      : makeAdditionNoZero(1, 100);
-  }
-  if (pick < 0.3) {
-    return Math.random() < 0.8
-      ? makeSubtractionNoZero(40, 100)
-      : makeSubtractionNoZero(1, 100);
-  }
-  if (pick < 0.65) {
-    return Math.random() < 0.75
-      ? makeMultiplication([25, 100], [25, 100])
-      : makeMultiplication([1, 100], [1, 100]);
-  }
-  return Math.random() < 0.75
-    ? makeDivision([8, 20], [8, 100])
-    : makeDivision([2, 100], [1, 100]);
 }
 
 function updateProblemText() {
@@ -499,41 +297,31 @@ function setHint(text) {
 }
 
 function formatTime(ms) {
+  if (!Number.isFinite(ms)) return "-";
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
   const seconds = String(totalSeconds % 60).padStart(2, "0");
   return `${minutes}:${seconds}`;
 }
 
+const roundClock = new RoundTimer((elapsedMs) => {
+  state.elapsedMs = elapsedMs;
+  if (timer) timer.textContent = formatTime(elapsedMs);
+});
+
 function startTimer() {
   if (!timer) return;
-  state.elapsedMs = 0;
-  timer.textContent = "00:00";
   timer.hidden = false;
-  const start = Date.now();
-  if (roundTimer) clearInterval(roundTimer);
-  roundTimer = setInterval(() => {
-    state.elapsedMs = Date.now() - start;
-    timer.textContent = formatTime(state.elapsedMs);
-  }, 500);
+  roundClock.start();
 }
 
 function resumeTimer() {
   if (!timer) return;
-  const base = state.elapsedMs;
-  const start = Date.now();
-  if (roundTimer) clearInterval(roundTimer);
-  roundTimer = setInterval(() => {
-    state.elapsedMs = base + (Date.now() - start);
-    timer.textContent = formatTime(state.elapsedMs);
-  }, 500);
+  roundClock.resume();
 }
 
 function stopTimer() {
-  if (roundTimer) {
-    clearInterval(roundTimer);
-    roundTimer = null;
-  }
+  state.elapsedMs = roundClock.pause();
   if (timer) {
     timer.hidden = !state.timerEnabled;
   }
@@ -542,98 +330,104 @@ function stopTimer() {
 function loadScores(key) {
   try {
     const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : [];
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
 function saveScores(key, list) {
-  localStorage.setItem(key, JSON.stringify(list));
-}
-
-function normalizeTimerScore(entry) {
-  return {
-    name: entry.name ?? "Player",
-    level: entry.level ?? "easy",
-    rounds: entry.rounds ?? 0,
-    bestRoundTimeMs: entry.bestRoundTimeMs ?? entry.bestTimeMs ?? Number.POSITIVE_INFINITY,
-    avgRoundTimeMs: entry.avgRoundTimeMs ?? null,
-    score: entry.score ?? 0,
-    timestamp: entry.timestamp ?? 0
-  };
-}
-
-function sortTimerRuns(list) {
-  list.sort((a, b) =>
-    a.bestRoundTimeMs - b.bestRoundTimeMs ||
-    b.rounds - a.rounds ||
-    b.score - a.score ||
-    b.timestamp - a.timestamp
-  );
+  try {
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch {
+    // A full or unavailable localStorage must not interrupt the game.
+  }
 }
 
 function renderScoreboard() {
   if (!scoreTable) return;
   const strings = i18n[state.lang];
-  const showTimer = state.timerEnabled;
-  if (!showTimer) {
-    const scores = loadScores("mathgame_scores_notimer");
-    scores.sort((a, b) => b.maxRound - a.maxRound || b.timestamp - a.timestamp);
-    const rows = scores.slice(0, 3);
-    scoreTable.innerHTML = [
-      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.difficulty}</div><div>${strings.score}</div></div>`,
-      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.maxRound}</div><div>${s.level}</div><div>${s.score ?? 0}</div></div>`)
-    ].join("");
-  } else {
-    const scores = loadScores("mathgame_scores_timer").map(normalizeTimerScore);
-    sortTimerRuns(scores);
-    const rows = scores.slice(0, 3);
-    scoreTable.innerHTML = [
-      `<div class="score-row header"><div>${strings.player_name}</div><div>${strings.round}</div><div>${strings.time_label}</div><div>${strings.score}</div></div>`,
-      ...rows.map((s) => `<div class="score-row"><div>${s.name}</div><div>${s.rounds}</div><div>${formatTime(s.bestRoundTimeMs)}</div><div>${s.score ?? 0}</div></div>`)
-    ].join("");
-  }
+  const timerMode = state.timerEnabled;
+  const scores = timerMode
+    ? sortTimerRuns(loadScores("mathgame_scores_timer").map(normalizeTimerScore)).slice(0, 3)
+    : sortNoTimerScores(loadScores("mathgame_scores_notimer").map(normalizeNoTimerScore)).slice(0, 3);
+  const headings = timerMode
+    ? [strings.player_name, strings.round, strings.time_label, strings.score]
+    : [strings.player_name, strings.round, strings.difficulty, strings.score];
+  scoreTable.replaceChildren(createScoreRow(headings, true));
+  scores.forEach((entry) => {
+    const values = timerMode
+      ? [entry.name, entry.rounds, formatTime(entry.bestRoundTimeMs), entry.score]
+      : [entry.name, entry.maxRound, strings[entry.level] ?? entry.level, entry.score];
+    scoreTable.append(createScoreRow(values));
+  });
+}
+
+function createScoreRow(values, isHeader = false) {
+  const row = document.createElement("div");
+  row.className = `score-row${isHeader ? " header" : ""}`;
+  values.forEach((value) => {
+    const cell = document.createElement("div");
+    cell.textContent = String(value ?? "");
+    row.append(cell);
+  });
+  return row;
+}
+
+function createScoreTable(title, headings, rows, widths) {
+  const section = document.createElement("div");
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  const table = document.createElement("table");
+  table.className = "full-score-table";
+  const colgroup = document.createElement("colgroup");
+  widths.forEach((width) => {
+    const col = document.createElement("col");
+    col.style.width = width;
+    colgroup.append(col);
+  });
+  const headingRow = document.createElement("tr");
+  headings.forEach((value) => {
+    const cell = document.createElement("th");
+    cell.textContent = value;
+    headingRow.append(cell);
+  });
+  table.append(colgroup, headingRow);
+  rows.forEach((values) => {
+    const row = document.createElement("tr");
+    values.forEach((value) => {
+      const cell = document.createElement("td");
+      cell.textContent = String(value ?? "");
+      row.append(cell);
+    });
+    table.append(row);
+  });
+  section.append(heading, table);
+  return section;
 }
 
 function openFullScoreboard() {
   const strings = i18n[state.lang];
   if (!fullScoreContent || !fullScoreOverlay) return;
-  const notimer = loadScores("mathgame_scores_notimer");
-  const timer = loadScores("mathgame_scores_timer").map(normalizeTimerScore);
-  notimer.sort((a, b) => b.maxRound - a.maxRound || b.timestamp - a.timestamp);
-  sortTimerRuns(timer);
-  fullScoreContent.innerHTML = `
-    <div>
-      <h3>${strings.no_timer}</h3>
-      <table class="full-score-table">
-        <colgroup>
-          <col style="width:38%">
-          <col style="width:14%">
-          <col style="width:24%">
-          <col style="width:24%">
-        </colgroup>
-        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.difficulty}</th><th>${strings.score}</th></tr>
-        ${notimer.map(s => `<tr><td>${s.name}</td><td>${s.maxRound}</td><td>${s.level}</td><td>${s.score ?? 0}</td></tr>`).join("")}
-      </table>
-    </div>
-    <div>
-      <h3>${strings.with_timer}</h3>
-      <table class="full-score-table">
-        <colgroup>
-          <col style="width:27%">
-          <col style="width:12%">
-          <col style="width:15%">
-          <col style="width:18%">
-          <col style="width:14%">
-          <col style="width:14%">
-        </colgroup>
-        <tr><th>${strings.player_name}</th><th>${strings.round}</th><th>${strings.difficulty}</th><th>${strings.time_label}</th><th>${strings.avg_time}</th><th>${strings.score}</th></tr>
-        ${timer.map(s => `<tr><td>${s.name}</td><td>${s.rounds}</td><td>${s.level}</td><td>${formatTime(s.bestRoundTimeMs)}</td><td>${s.avgRoundTimeMs != null ? formatTime(s.avgRoundTimeMs) : "-"}</td><td>${s.score ?? 0}</td></tr>`).join("")}
-      </table>
-    </div>
-  `;
-  fullScoreOverlay.hidden = false;
+  const noTimerScores = sortNoTimerScores(loadScores("mathgame_scores_notimer").map(normalizeNoTimerScore));
+  const timerScores = sortTimerRuns(loadScores("mathgame_scores_timer").map(normalizeTimerScore));
+  const noTimerRows = noTimerScores.map((entry) => [
+    entry.name, entry.maxRound, strings[entry.level] ?? entry.level, entry.score,
+  ]);
+  const timerRows = timerScores.map((entry) => [
+    entry.name,
+    entry.rounds,
+    strings[entry.level] ?? entry.level,
+    formatTime(entry.bestRoundTimeMs),
+    entry.avgRoundTimeMs == null ? "-" : formatTime(entry.avgRoundTimeMs),
+    entry.score,
+  ]);
+  fullScoreContent.replaceChildren(
+    createScoreTable(strings.no_timer, [strings.player_name, strings.round, strings.difficulty, strings.score], noTimerRows, ["38%", "14%", "24%", "24%"]),
+    createScoreTable(strings.with_timer, [strings.player_name, strings.round, strings.difficulty, strings.time_label, strings.avg_time, strings.score], timerRows, ["27%", "12%", "15%", "18%", "14%", "14%"]),
+  );
+  openDialog(fullScoreOverlay, closeFullScoreX);
 }
 
 function scheduleRainbow() {
@@ -656,7 +450,7 @@ function nextQuestion() {
     endGame();
     return;
   }
-  state.currentQuestion = generateQuestion(state.difficulty);
+  state.currentQuestion = state.roundQuestions[state.currentIndex];
   state.wrongAttempts = 0;
   updateProblemText();
   setHint("");
@@ -671,13 +465,13 @@ function startGame() {
   state.roundNumber = 1;
   state.score = 0;
   state.bestRoundTimeMs = null;
+  state.roundTimes = [];
   state.streak = 0;
   state.consecutiveWrong = 0;
   state.wrongAttempts = 0;
   state.currentQuestion = null;
+  state.roundQuestions = generateRoundPlan(state.difficulty, Math.random, state.roundNumber);
   state.results = [];
-  state.unlocked.medium = false;
-  state.unlocked.hard = false;
   updateStats();
   endOverlay.hidden = true;
   setKittenCrying(false);
@@ -687,6 +481,7 @@ function startGame() {
   stopTimer();
   state.timerPaused = false;
   state.roundActive = true;
+  setAnswerEnabled(true);
   if (saveScoreBtn) saveScoreBtn.disabled = false;
   if (playerNameInput) {
     state.playerName = playerNameInput.value.trim();
@@ -703,7 +498,7 @@ function showStartScreen() {
   state.currentQuestion = null;
   clearProblemText();
   setHint("");
-  if (startOverlay) startOverlay.hidden = false;
+  openDialog(startOverlay, playerNameInput);
   if (timerRow) timerRow.hidden = true;
   if (timer) timer.hidden = true;
 }
@@ -716,9 +511,8 @@ function nextRound() {
   state.consecutiveWrong = 0;
   state.wrongAttempts = 0;
   state.currentQuestion = null;
+  state.roundQuestions = generateRoundPlan(state.difficulty, Math.random, state.roundNumber);
   state.results = [];
-  if (state.roundNumber >= 2) state.unlocked.medium = true;
-  if (state.roundNumber >= 4) state.unlocked.hard = true;
   updateStats();
   endOverlay.hidden = true;
   setKittenCrying(false);
@@ -728,13 +522,8 @@ function nextRound() {
   stopTimer();
   state.timerPaused = false;
   state.roundActive = true;
+  setAnswerEnabled(true);
   if (saveScoreBtn) saveScoreBtn.disabled = false;
-  if (state.timerEnabled) {
-    state.bestRoundTimeMs = Math.min(
-      state.bestRoundTimeMs ?? Number.POSITIVE_INFINITY,
-      state.elapsedMs
-    );
-  }
   if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
   if (timer) timer.hidden = !state.timerEnabled;
   if (state.timerEnabled) startTimer();
@@ -744,28 +533,18 @@ function nextRound() {
 function giveHint() {
   const strings = i18n[state.lang];
   const { a, b, op } = state.currentQuestion;
-  if (op === "×") {
-    setHint(strings.hint_mul(a, b));
-  } else {
-    setHint(strings.hint_div(a, b));
-  }
-}
-
-function celebrateSeed() {
-  if (!seed) return;
-  seed.classList.add("grow");
-  setTimeout(() => seed.classList.remove("grow"), 300);
+  const hints = {
+    "+": strings.hint_add,
+    "−": strings.hint_sub,
+    "×": strings.hint_mul,
+    "÷": strings.hint_div,
+  };
+  setHint(hints[op](a, b));
 }
 
 function setCelebrateMessage() {
   if (!celebrate) return;
-  const messages = [
-    "Great job!",
-    "Well done!",
-    "You are the best!",
-    "Fantastic!",
-    "Amazing work!"
-  ];
+  const messages = i18n[state.lang].celebrations;
   const msg = messages[Math.floor(Math.random() * messages.length)];
   celebrate.textContent = msg;
   if (speech) {
@@ -821,10 +600,10 @@ function moveFlowerToIsland() {
 function endGame() {
   state.roundActive = false;
   if (state.timerEnabled) {
-    state.bestRoundTimeMs = Math.min(
-      state.bestRoundTimeMs ?? Number.POSITIVE_INFINITY,
-      state.elapsedMs
-    );
+    stopTimer();
+    state.roundTimes.push(state.elapsedMs);
+    const stats = calculateTimerStats(state.roundTimes);
+    state.bestRoundTimeMs = stats.bestRoundTimeMs;
   }
   let starHtml = "";
   if (state.roundCorrect === TOTAL_QUESTIONS) {
@@ -861,39 +640,33 @@ function endGame() {
       speech.classList.remove("active");
     }
     kitten.classList.remove("celebrating");
-    endOverlay.hidden = false;
+    openDialog(endOverlay, nextRoundBtn);
   }, 5000);
 }
 
 answerForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  if (!state.roundActive) return;
+  if (!state.roundActive || state.timerPaused) return;
   const input = answerInput.value.trim();
   if (input === "") return;
   const numeric = Number(input);
   const strings = i18n[state.lang];
 
   if (numeric === state.currentQuestion.answer) {
-    const scoreStep = getDifficultyScoreMultiplier();
-    state.score += scoreStep;
     state.roundCorrect = Math.min(state.roundCorrect + 1, TOTAL_QUESTIONS);
     state.totalCorrect += 1;
     state.streak += 1;
+    state.score += getAnswerScore(state.difficulty, state.streak);
     state.consecutiveWrong = 0;
     state.currentIndex += 1;
     state.results.push(true);
     setFeedback(strings.correct, true);
     setHint("");
-    celebrateSeed();
     setKittenCrying(false);
     setKittenMood(null);
     playKitten("happy");
 
     updateDifficultyUI();
-
-    if (state.streak > 0 && state.streak % STREAK_BONUS_AT === 0) {
-      state.score += scoreStep;
-    }
 
     updateStats();
     updateFlowerProgress(state.roundCorrect);
@@ -937,24 +710,23 @@ function updateDifficultyUI() {
     btn.classList.remove("locked");
     btn.disabled = false;
     btn.classList.toggle("active", level === state.difficulty);
+    btn.setAttribute("aria-pressed", String(level === state.difficulty));
   });
   startDifficultyButtons.forEach((btn) => {
     const level = btn.getAttribute("data-start-difficulty");
     btn.classList.remove("locked");
     btn.disabled = false;
     btn.classList.toggle("active", level === state.difficulty);
+    btn.setAttribute("aria-pressed", String(level === state.difficulty));
   });
 }
 
 difficultyButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     const level = btn.getAttribute("data-difficulty");
-    const isUnlocked =
-      level === "easy" ||
-      (level === "medium" && state.unlocked.medium) ||
-      (level === "hard" && state.unlocked.hard);
-    if (!isUnlocked) return;
     state.difficulty = level;
+    const replacement = generateRoundPlan(level, Math.random, state.roundNumber);
+    state.roundQuestions.splice(state.currentIndex, TOTAL_QUESTIONS - state.currentIndex, ...replacement.slice(state.currentIndex));
     updateDifficultyUI();
     state.wrongAttempts = 0;
     state.consecutiveWrong = 0;
@@ -979,16 +751,20 @@ Array.from(document.querySelectorAll("[data-lang]")).forEach((btn) => {
 // handled below with null checks
 
 if (nextRoundBtn) {
-  nextRoundBtn.addEventListener("click", nextRound);
+  nextRoundBtn.addEventListener("click", () => {
+    closeDialog(endOverlay, false);
+    nextRound();
+  });
 }
 if (playAgainBtn) {
   playAgainBtn.addEventListener("click", () => {
-    if (confirmOverlay) confirmOverlay.hidden = false;
+    state.confirmWasPaused = state.timerPaused;
+    openDialog(confirmOverlay, confirmNo);
   });
 }
 if (startGameBtn) {
   startGameBtn.addEventListener("click", () => {
-    if (startOverlay) startOverlay.hidden = true;
+    closeDialog(startOverlay, false);
     state.timerEnabled = !!(timerToggle && timerToggle.checked);
     if (timerRow) timerRow.hidden = false;
     if (pauseBtn) pauseBtn.hidden = !state.timerEnabled;
@@ -1019,26 +795,26 @@ if (fullScoreBtn) {
 }
 if (closeFullScoreX) {
   closeFullScoreX.addEventListener("click", () => {
-    if (fullScoreOverlay) fullScoreOverlay.hidden = true;
+    closeDialog(fullScoreOverlay);
   });
 }
 if (clearScoresBtn) {
   clearScoresBtn.addEventListener("click", () => {
-    if (clearScoresOverlay) clearScoresOverlay.hidden = false;
+    openDialog(clearScoresOverlay, clearScoresNo);
   });
 }
 if (clearScoresYes) {
   clearScoresYes.addEventListener("click", () => {
     localStorage.removeItem("mathgame_scores_notimer");
     localStorage.removeItem("mathgame_scores_timer");
-    if (clearScoresOverlay) clearScoresOverlay.hidden = true;
+    closeDialog(clearScoresOverlay, false);
     renderScoreboard();
     openFullScoreboard();
   });
 }
 if (clearScoresNo) {
   clearScoresNo.addEventListener("click", () => {
-    if (clearScoresOverlay) clearScoresOverlay.hidden = true;
+    closeDialog(clearScoresOverlay);
   });
 }
 
@@ -1062,12 +838,16 @@ if (pauseBtn) {
       kitten.classList.remove("sleeping");
       pauseBtn.classList.remove("active");
       pauseBtn.textContent = i18n[state.lang].pause;
+      pauseBtn.setAttribute("aria-pressed", "false");
+      setAnswerEnabled(true);
       resumeTimer();
     } else {
       state.timerPaused = true;
       kitten.classList.add("sleeping");
       pauseBtn.classList.add("active");
       pauseBtn.textContent = i18n[state.lang].continue;
+      pauseBtn.setAttribute("aria-pressed", "true");
+      setAnswerEnabled(false);
       stopTimer();
     }
   });
@@ -1075,31 +855,35 @@ if (pauseBtn) {
 
 if (newGameBtn) {
   newGameBtn.addEventListener("click", () => {
+    state.confirmWasPaused = state.timerPaused;
     if (!state.timerEnabled) {
-      if (confirmOverlay) confirmOverlay.hidden = false;
+      openDialog(confirmOverlay, confirmNo);
       return;
     }
     if (!state.timerPaused) {
       state.timerPaused = true;
       stopTimer();
       kitten.classList.add("sleeping");
+      setAnswerEnabled(false);
     }
-    if (confirmOverlay) confirmOverlay.hidden = false;
+    openDialog(confirmOverlay, confirmNo);
   });
 }
 
 if (confirmYes) {
   confirmYes.addEventListener("click", () => {
-    if (confirmOverlay) confirmOverlay.hidden = true;
+    closeDialog(confirmOverlay, false);
     showStartScreen();
     stopTimer();
     state.timerEnabled = false;
     state.timerPaused = false;
+    setAnswerEnabled(true);
     kitten.classList.remove("sleeping");
     kitten.classList.remove("celebrating");
     if (pauseBtn) {
       pauseBtn.classList.remove("active");
       pauseBtn.textContent = i18n[state.lang].pause;
+      pauseBtn.setAttribute("aria-pressed", "false");
     }
     if (confetti) confetti.classList.remove("active");
     if (celebrate) celebrate.textContent = "";
@@ -1117,18 +901,29 @@ if (confirmYes) {
 
 if (confirmNo) {
   confirmNo.addEventListener("click", () => {
-    if (confirmOverlay) confirmOverlay.hidden = true;
-    if (state.timerEnabled && state.timerPaused) {
+    closeDialog(confirmOverlay);
+    if (state.roundActive && state.timerEnabled && state.timerPaused && !state.confirmWasPaused) {
       state.timerPaused = false;
       kitten.classList.remove("sleeping");
+      setAnswerEnabled(true);
       if (pauseBtn) {
         pauseBtn.classList.remove("active");
         pauseBtn.textContent = i18n[state.lang].pause;
+        pauseBtn.setAttribute("aria-pressed", "false");
       }
       resumeTimer();
     }
   });
 }
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (clearScoresOverlay && !clearScoresOverlay.hidden) {
+    closeDialog(clearScoresOverlay);
+  } else if (fullScoreOverlay && !fullScoreOverlay.hidden) {
+    closeDialog(fullScoreOverlay);
+  }
+});
 
 if (saveScoreBtn) {
   saveScoreBtn.addEventListener("click", () => {
@@ -1137,37 +932,28 @@ if (saveScoreBtn) {
       ? state.score
       : Number(state.score.toFixed(1));
     if (state.timerEnabled) {
-      const scores = loadScores("mathgame_scores_timer");
-      const bestTime = state.bestRoundTimeMs ?? state.elapsedMs;
-      const avgTime = state.roundNumber > 0 ? Math.round(state.elapsedMs / state.roundNumber) : null;
+      const scores = loadScores("mathgame_scores_timer").map(normalizeTimerScore);
+      const stats = calculateTimerStats(state.roundTimes);
       // Run-based leaderboard entry: keep every saved game run.
       scores.push({
         name,
         level: state.difficulty,
         rounds: state.roundNumber,
-        bestRoundTimeMs: bestTime,
-        avgRoundTimeMs: avgTime,
+        bestRoundTimeMs: stats.bestRoundTimeMs ?? state.elapsedMs,
+        avgRoundTimeMs: stats.avgRoundTimeMs,
         score: scoreValue,
         timestamp: Date.now()
       });
-      saveScores("mathgame_scores_timer", scores);
+      saveScores("mathgame_scores_timer", limitTimerScores(scores));
     } else {
-      const scores = loadScores("mathgame_scores_notimer");
-      const existing = scores.find((s) => s.name === name && s.level === state.difficulty);
-      if (existing) {
-        existing.maxRound = Math.max(existing.maxRound, state.roundNumber);
-        existing.score = Math.max(existing.score ?? 0, scoreValue);
-        existing.timestamp = Date.now();
-      } else {
-        scores.push({
-          name,
-          level: state.difficulty,
-          maxRound: state.roundNumber,
-          score: scoreValue,
-          timestamp: Date.now()
-        });
-      }
-      saveScores("mathgame_scores_notimer", scores);
+      const scores = upsertNoTimerScore(loadScores("mathgame_scores_notimer"), {
+        name,
+        level: state.difficulty,
+        maxRound: state.roundNumber,
+        score: scoreValue,
+        timestamp: Date.now(),
+      });
+      saveScores("mathgame_scores_notimer", limitNoTimerScores(scores));
     }
     renderScoreboard();
     saveScoreBtn.disabled = true;
